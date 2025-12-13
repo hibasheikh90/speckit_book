@@ -1,0 +1,581 @@
+---
+id: chapter-12-worlds
+title: "Chapter 12: Gazebo World Design and Environments"
+sidebar_label: "Ch 12: World Design"
+sidebar_position: 12
+description: Design custom Gazebo worlds with terrain, obstacles, lighting, and dynamic environments for robot testing
+keywords: [gazebo world, sdf, environment design, terrain, obstacles, lighting, world file]
+---
+
+# Chapter 12: Gazebo World Design and Environments
+
+**Estimated Reading Time**: 50 minutes
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+- **LO-2.4.1**: Create custom Gazebo worlds using SDF format
+- **LO-2.4.2**: Add models, obstacles, and props to environments
+- **LO-2.4.3**: Configure lighting and atmospheric effects
+- **LO-2.4.4**: Design terrain and heightmaps
+- **LO-2.4.5**: Spawn models dynamically via ROS 2
+- **LO-2.4.6**: Organize testing environments for different scenarios
+
+---
+
+## 1. Understanding SDF (Simulation Description Format)
+
+**SDF** is the XML format used to describe Gazebo worlds, models, and scenes.
+
+### SDF vs URDF
+
+| Feature | URDF | SDF |
+|---------|------|-----|
+| **Purpose** | Robot description | World & model description |
+| **Scope** | Single robot | Entire simulation |
+| **Supports** | Kinematics, dynamics | Everything (physics, sensors, worlds) |
+| **Typical Use** | ROS robot models | Gazebo environments |
+
+---
+
+## 2. Creating a Basic World
+
+### Minimal World File
+
+**File: `empty_world.world`**
+```xml
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="default">
+
+    <!-- Physics -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <!-- Lighting -->
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground Plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+  </world>
+</sdf>
+```
+
+### Loading Custom World
+
+```bash
+gazebo empty_world.world
+```
+
+---
+
+## 3. Adding Models and Obstacles
+
+### Including Built-in Models
+
+```xml
+<!-- Add construction cone -->
+<include>
+  <uri>model://construction_cone</uri>
+  <pose>2 0 0 0 0 0</pose>  <!-- x y z roll pitch yaw -->
+  <name>cone_1</name>
+</include>
+
+<!-- Add café table -->
+<include>
+  <uri>model://cafe_table</uri>
+  <pose>5 3 0 0 0 1.57</pose>
+  <name>table_1</name>
+</include>
+
+<!-- Add person -->
+<include>
+  <uri>model://person_standing</uri>
+  <pose>3 -2 0 0 0 0</pose>
+  <name>person_1</name>
+</include>
+```
+
+### Creating Custom Models Inline
+
+```xml
+<!-- Custom box obstacle -->
+<model name="red_box">
+  <static>true</static>  <!-- Doesn't move -->
+  <pose>3 0 0.5 0 0 0</pose>
+  <link name="link">
+    <collision name="collision">
+      <geometry>
+        <box>
+          <size>1 1 1</size>
+        </box>
+      </geometry>
+    </collision>
+    <visual name="visual">
+      <geometry>
+        <box>
+          <size>1 1 1</size>
+        </box>
+      </geometry>
+      <material>
+        <ambient>1 0 0 1</ambient>
+        <diffuse>1 0 0 1</diffuse>
+      </material>
+    </visual>
+  </link>
+</model>
+```
+
+---
+
+## 4. Obstacle Course World
+
+### Complete Testing Environment
+
+```xml
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="obstacle_course">
+
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <!-- Sun -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Ground -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Start Zone -->
+    <model name="start_marker">
+      <static>true</static>
+      <pose>0 0 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>2 2 0.02</size></box>
+          </geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>  <!-- Green -->
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Obstacles -->
+    <include>
+      <uri>model://construction_cone</uri>
+      <name>cone_1</name>
+      <pose>3 1 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://construction_cone</uri>
+      <name>cone_2</name>
+      <pose>3 -1 0 0 0 0</pose>
+    </include>
+
+    <!-- Wall obstacle -->
+    <model name="wall">
+      <static>true</static>
+      <pose>6 0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>0.2 4 1</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.2 4 1</size></box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Goal Zone -->
+    <model name="goal_marker">
+      <static>true</static>
+      <pose>10 0 0.01 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>2 2 0.02</size></box>
+          </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>  <!-- Red -->
+          </material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
+```
+
+---
+
+## 5. Dynamic Model Spawning
+
+### Spawning Models via ROS 2
+
+```python
+#!/usr/bin/env python3
+import rclpy
+from rclpy.node import Node
+from gazebo_msgs.srv import SpawnEntity
+import random
+
+class ModelSpawner(Node):
+    def __init__(self):
+        super().__init__('model_spawner')
+        self.spawn_client = self.create_client(
+            SpawnEntity,
+            '/spawn_entity'
+        )
+
+        while not self.spawn_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for spawn_entity service...')
+
+    def spawn_cone(self, name, x, y):
+        """Spawn a construction cone at position (x, y)."""
+        request = SpawnEntity.Request()
+        request.name = name
+        request.xml = '''
+        <?xml version="1.0"?>
+        <sdf version="1.6">
+          <model name="cone">
+            <static>true</static>
+            <link name="link">
+              <collision name="collision">
+                <geometry>
+                  <cylinder>
+                    <radius>0.15</radius>
+                    <length>0.7</length>
+                  </cylinder>
+                </geometry>
+              </collision>
+              <visual name="visual">
+                <geometry>
+                  <cylinder>
+                    <radius>0.15</radius>
+                    <length>0.7</length>
+                  </cylinder>
+                </geometry>
+                <material>
+                  <ambient>1 0.5 0 1</ambient>
+                </material>
+              </visual>
+            </link>
+          </model>
+        </sdf>
+        '''
+        request.robot_namespace = ''
+        request.initial_pose.position.x = x
+        request.initial_pose.position.y = y
+        request.initial_pose.position.z = 0.35
+
+        future = self.spawn_client.call_async(request)
+        rclpy.spin_until_future_complete(self, future)
+
+        if future.result() is not None:
+            self.get_logger().info(f'Spawned {name} at ({x}, {y})')
+        else:
+            self.get_logger().error(f'Failed to spawn {name}')
+
+def main():
+    rclpy.init()
+    spawner = ModelSpawner()
+
+    # Spawn 10 random cones
+    for i in range(10):
+        x = random.uniform(2, 10)
+        y = random.uniform(-5, 5)
+        spawner.spawn_cone(f'cone_{i}', x, y)
+
+    spawner.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+```
+
+---
+
+## 6. Lighting and Atmosphere
+
+### Multiple Light Sources
+
+```xml
+<!-- Directional light (sun) -->
+<light name="sun" type="directional">
+  <cast_shadows>true</cast_shadows>
+  <pose>0 0 10 0 0 0</pose>
+  <diffuse>0.8 0.8 0.8 1</diffuse>
+  <direction>-0.5 0.1 -0.9</direction>
+</light>
+
+<!-- Point light (lamp) -->
+<light name="lamp" type="point">
+  <pose>5 5 2 0 0 0</pose>
+  <diffuse>1 1 0.8 1</diffuse>
+  <specular>0.1 0.1 0.1 1</specular>
+  <attenuation>
+    <range>10</range>
+    <constant>0.5</constant>
+    <linear>0.01</linear>
+    <quadratic>0.001</quadratic>
+  </attenuation>
+  <cast_shadows>false</cast_shadows>
+</light>
+
+<!-- Spotlight -->
+<light name="spotlight" type="spot">
+  <pose>0 0 5 0 1.57 0</pose>
+  <diffuse>1 1 1 1</diffuse>
+  <specular>0.2 0.2 0.2 1</specular>
+  <spot>
+    <inner_angle>0.6</inner_angle>
+    <outer_angle>1.0</outer_angle>
+    <falloff>1.0</falloff>
+  </spot>
+  <attenuation>
+    <range>20</range>
+  </attenuation>
+  <cast_shadows>true</cast_shadows>
+</light>
+```
+
+### Atmospheric Effects
+
+```xml
+<scene>
+  <ambient>0.4 0.4 0.4 1</ambient>     <!-- Overall ambient lighting -->
+  <background>0.7 0.8 1 1</background>  <!-- Sky color -->
+  <shadows>true</shadows>
+  <fog>
+    <color>0.9 0.9 0.9 1</color>
+    <type>linear</type>
+    <start>10</start>
+    <end>50</end>
+    <density>0.1</density>
+  </fog>
+</scene>
+```
+
+---
+
+## 7. Terrain and Heightmaps
+
+### Heightmap Terrain
+
+```xml
+<model name="terrain">
+  <static>true</static>
+  <link name="link">
+    <collision name="collision">
+      <geometry>
+        <heightmap>
+          <uri>file://terrain.png</uri>
+          <size>100 100 10</size>  <!-- Width, Depth, Max Height -->
+          <pos>0 0 -5</pos>
+        </heightmap>
+      </geometry>
+    </collision>
+    <visual name="visual">
+      <geometry>
+        <heightmap>
+          <texture>
+            <diffuse>file://grass.jpg</diffuse>
+            <normal>file://grass_normal.jpg</normal>
+            <size>10</size>
+          </texture>
+          <uri>file://terrain.png</uri>
+          <size>100 100 10</size>
+        </heightmap>
+      </geometry>
+    </visual>
+  </link>
+</model>
+```
+
+**Creating Heightmap**:
+- Use grayscale PNG image
+- White = high elevation
+- Black = low elevation
+- Resolution: 256x256 or 512x512
+
+---
+
+## Lab Exercise 2.4: Navigation Test Environment
+
+### Objective
+
+Design a world for testing autonomous navigation with multiple obstacles and waypoints.
+
+### Requirements
+
+**World Specifications**:
+1. 20m × 20m flat area
+2. 5 static obstacles (boxes, cones, walls)
+3. 3 waypoint markers (green circles on ground)
+4. Proper lighting
+5. Start zone (blue square)
+
+**Deliverables**:
+1. `navigation_test.world` file
+2. Launch file to start Gazebo with world
+3. Python script to spawn robot
+4. Screenshot showing full environment
+
+### Starter Code
+
+```xml
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="navigation_test">
+
+    <!-- TODO: Add physics -->
+
+    <!-- TODO: Add lighting -->
+
+    <!-- TODO: Add ground plane -->
+
+    <!-- TODO: Add start zone marker -->
+
+    <!-- TODO: Add 5 obstacles -->
+
+    <!-- TODO: Add 3 waypoint markers -->
+
+  </world>
+</sdf>
+```
+
+### Acceptance Criteria
+
+- ✅ World loads without errors
+- ✅ All obstacles visible
+- ✅ Markers clearly identifiable
+- ✅ Robot can spawn and navigate
+- ✅ Proper lighting and shadows
+
+---
+
+## Quiz 2.4: World Design
+
+### Question 1
+**What format is used to describe Gazebo worlds?**
+
+- A) URDF
+- B) Xacro
+- C) SDF ✓
+- D) XML
+
+**Explanation**: SDF (Simulation Description Format) describes worlds, while URDF describes robots.
+
+---
+
+### Question 2
+**What does `<static>true</static>` mean for a model?**
+
+- A) Model is invisible
+- B) Model doesn't move (fixed in space) ✓
+- C) Model has no physics
+- D) Model is temporary
+
+**Explanation**: Static models are fixed in place and don't respond to physics (collisions, gravity).
+
+---
+
+### Question 3
+**True or False: You can spawn models dynamically via ROS 2 services.**
+
+- True ✓
+
+**Explanation**: The `/spawn_entity` service allows spawning models at runtime without editing world files.
+
+---
+
+### Question 4
+**What creates shadows in Gazebo?**
+
+- A) Ground plane
+- B) Lights with cast_shadows enabled ✓
+- C) Camera sensors
+- D) Physics engine
+
+**Explanation**: Lights must have `<cast_shadows>true</cast_shadows>` to generate shadows.
+
+---
+
+### Question 5
+**Why use heightmaps for terrain? (Short answer)**
+
+**Expected Answer**: Heightmaps efficiently create realistic outdoor terrain (hills, valleys) from grayscale images, allowing varied elevation testing without complex modeling.
+
+---
+
+## Key Takeaways
+
+✅ **SDF format** describes Gazebo worlds, models, and environments
+
+✅ **Static models** (`<static>true</static>`) are fixed obstacles
+
+✅ **Dynamic spawning** via `/spawn_entity` ROS 2 service enables runtime changes
+
+✅ **Lighting** affects realism: directional (sun), point (lamp), spot (focused)
+
+✅ **Heightmaps** create terrain from grayscale images efficiently
+
+✅ **Test environments** should match real-world deployment scenarios
+
+---
+
+## What's Next?
+
+In **Chapter 13**, you'll explore **Unity for Robotics**, using Unity's game engine for photorealistic simulation and VR integration!
+
+[Continue to Chapter 13: Unity for Robotics →](/docs/module-2-simulation/week-7/chapter-13-unity-ros)
+
+---
+
+## Additional Resources
+
+- **SDF Specification**: [sdformat.org/spec](http://sdformat.org/spec)
+- **Gazebo Models**: [github.com/osrf/gazebo_models](https://github.com/osrf/gazebo_models)
+- **World Files**: [classic.gazebosim.org/tutorials?tut=build_world](https://classic.gazebosim.org/tutorials?tut=build_world)
+
+---
+
+**Progress**: Module 2, Week 6, Chapter 12 of 32 | [View all chapters](/docs/intro)

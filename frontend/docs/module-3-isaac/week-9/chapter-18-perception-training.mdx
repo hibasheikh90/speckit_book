@@ -1,0 +1,427 @@
+---
+title: "Chapter 18: Training Perception Models with Isaac Sim"
+description: "Train state-of-the-art object detection and segmentation models using synthetic data from Isaac Sim and deploy them back into simulation for validation"
+sidebar_position: 4
+---
+
+# Chapter 18: Training Perception Models with Isaac Sim
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Prepare** synthetic datasets from Isaac Sim for training PyTorch models
+2. **Train** YOLOv8 object detection models on synthetic data
+3. **Evaluate** model performance using standard metrics (mAP, precision, recall)
+4. **Deploy** trained models back into Isaac Sim for real-time inference
+5. **Measure** sim-to-real transfer performance and identify domain gaps
+6. **Apply** techniques to improve model generalization (data augmentation, fine-tuning)
+
+---
+
+## Introduction: From Synthetic Data to Trained Models
+
+In Chapter 17, you generated thousands of annotated images using Isaac Sim's Replicator. Now we'll **close the loop**:
+
+1. **Generate** synthetic dataset (Chapter 17)
+2. **Train** perception model (this chapter)
+3. **Deploy** model into Isaac Sim for testing
+4. **Iterate** based on performance
+
+This workflow enables **rapid prototyping** of vision systems before touching real hardware.
+
+---
+
+## Dataset Preparation
+
+### Converting Replicator Output to Training Format
+
+Isaac Sim Replicator outputs NumPy arrays for annotations. Most training frameworks expect specific formats:
+
+- **YOLOv8**: Text files with normalized bounding boxes
+- **Detectron2**: COCO JSON format
+- **PyTorch**: Custom dataset loaders
+
+### Example: YOLO Format Conversion
+
+```python title="convert_to_yolo.py"
+import numpy as np
+from PIL import Image
+import os
+
+dataset_dir = "./synthetic_mugs"
+output_dir = "./yolo_dataset"
+os.makedirs(f"{output_dir}/images/train", exist_ok=True)
+os.makedirs(f"{output_dir}/labels/train", exist_ok=True)
+
+# Process each image
+for i in range(1000):
+    # Load RGB image
+    img_path = f"{dataset_dir}/rgb_{i:04d}.png"
+    img = Image.open(img_path)
+    img_width, img_height = img.size
+
+    # Load bounding boxes [x_min, y_min, x_max, y_max]
+    bbox_path = f"{dataset_dir}/bounding_box_2d_tight_{i:04d}.npy"
+    bboxes = np.load(bbox_path)
+
+    # Convert to YOLO format: [class_id, x_center, y_center, width, height] (normalized)
+    yolo_labels = []
+    for bbox in bboxes:
+        x_min, y_min, x_max, y_max = bbox
+
+        # Normalize to [0, 1]
+        x_center = ((x_min + x_max) / 2) / img_width
+        y_center = ((y_min + y_max) / 2) / img_height
+        width = (x_max - x_min) / img_width
+        height = (y_max - y_min) / img_height
+
+        class_id = 0  # "mug" class
+        yolo_labels.append(f"{class_id} {x_center:.6f} {y_center:.6f} {width:.6f} {height:.6f}")
+
+    # Save image
+    img.save(f"{output_dir}/images/train/{i:04d}.jpg")
+
+    # Save labels
+    with open(f"{output_dir}/labels/train/{i:04d}.txt", 'w') as f:
+        f.write('\n'.join(yolo_labels))
+
+print(f"Converted {1000} images to YOLO format!")
+```
+
+### Dataset Configuration
+
+Create `dataset.yaml` for YOLOv8:
+
+```yaml title="dataset.yaml"
+path: ./yolo_dataset
+train: images/train
+val: images/val
+
+nc: 1  # Number of classes
+names: ['mug']
+```
+
+---
+
+## Training YOLOv8 on Synthetic Data
+
+### Installation
+
+```bash
+pip install ultralytics torch torchvision
+```
+
+### Training Script
+
+```python title="train_yolo.py"
+from ultralytics import YOLO
+
+# Load pretrained YOLO model
+model = YOLO('yolov8n.pt')  # Nano model (fastest)
+
+# Train on synthetic data
+results = model.train(
+    data='dataset.yaml',
+    epochs=50,
+    imgsz=640,
+    batch=16,
+    device=0,  # GPU 0
+    project='runs/detect',
+    name='mug_detector',
+    patience=10,  # Early stopping
+    save=True,
+    plots=True
+)
+
+# Evaluate
+metrics = model.val()
+print(f"mAP50: {metrics.box.map50:.3f}")
+print(f"mAP50-95: {metrics.box.map:.3f}")
+```
+
+**Run**:
+```bash
+python train_yolo.py
+```
+
+**Expected Output**:
+```
+Epoch   GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
+  1/50     2.1G      1.234      0.876      1.123         25        640
+  ...
+ 50/50     2.1G      0.234      0.076      0.323         25        640
+
+mAP50: 0.892
+mAP50-95: 0.654
+```
+
+---
+
+## Evaluation Metrics
+
+### Key Metrics Explained
+
+**1. Precision**:
+- Of all predictions labeled "mug", what % were actually mugs?
+- High precision = few false positives
+
+**2. Recall**:
+- Of all actual mugs, what % did we detect?
+- High recall = few false negatives
+
+**3. mAP50** (mean Average Precision @ IoU=0.5):
+- Average precision across all classes at 50% overlap threshold
+- Standard metric for object detection
+
+**4. mAP50-95**:
+- Average mAP at IoU thresholds from 50% to 95%
+- Stricter metric (requires precise bounding boxes)
+
+### Visualizing Predictions
+
+```python title="visualize_predictions.py"
+from ultralytics import YOLO
+from PIL import Image
+import matplotlib.pyplot as plt
+
+model = YOLO('runs/detect/mug_detector/weights/best.pt')
+
+# Predict on test image
+img_path = "yolo_dataset/images/val/0000.jpg"
+results = model.predict(img_path, conf=0.5)
+
+# Visualize
+results[0].plot()
+plt.savefig('prediction.jpg')
+print("Saved prediction to prediction.jpg")
+```
+
+---
+
+## Deploying Models into Isaac Sim
+
+### Real-Time Inference in Simulation
+
+```python title="deploy_yolo_isaac.py"
+from omni.isaac.kit import SimulationApp
+simulation_app = SimulationApp({"headless": False})
+
+from omni.isaac.core import SimulationContext
+from omni.isaac.sensor import Camera
+import cv2
+import numpy as np
+from ultralytics import YOLO
+
+# Load trained model
+model = YOLO('runs/detect/mug_detector/weights/best.pt')
+
+# Create simulation
+sim_context = SimulationContext()
+sim_context.add_default_ground_plane()
+
+# Add camera
+camera = Camera(
+    prim_path="/World/Camera",
+    position=[2.0, 0.0, 1.5],
+    resolution=(640, 480),
+    frequency=10  # 10 Hz
+)
+
+# Start simulation
+sim_context.play()
+
+# Inference loop
+while simulation_app.is_running():
+    sim_context.step(render=True)
+
+    # Get camera image
+    rgb_data = camera.get_rgba()[:, :, :3]  # Drop alpha channel
+
+    # Run YOLO inference
+    results = model.predict(rgb_data, verbose=False)
+
+    # Draw bounding boxes
+    annotated_frame = results[0].plot()
+
+    # Display
+    cv2.imshow("YOLO Detections", cv2.cvtColor(annotated_frame, cv2.COLOR_RGB2BGR))
+    cv2.waitKey(1)
+
+simulation_app.close()
+```
+
+**Result**: Real-time object detection running inside Isaac Sim!
+
+---
+
+## Sim-to-Real Transfer Evaluation
+
+### Testing on Real Images
+
+```python title="test_real_images.py"
+from ultralytics import YOLO
+import glob
+
+model = YOLO('runs/detect/mug_detector/weights/best.pt')
+
+# Test on real photos
+real_images = glob.glob("real_mug_photos/*.jpg")
+
+for img_path in real_images:
+    results = model.predict(img_path, save=True, conf=0.5)
+    print(f"{img_path}: {len(results[0].boxes)} mugs detected")
+```
+
+### Common Sim-to-Real Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| Low recall on real data | Synthetic textures too uniform | Increase texture randomization |
+| False positives | Backgrounds too simple | Add clutter, complex scenes |
+| Poor lighting adaptation | Only trained on bright scenes | Randomize lighting intensity |
+| Size estimation errors | Camera FOV mismatch | Match synthetic camera specs to real |
+
+---
+
+## Fine-Tuning on Real Data
+
+If sim-to-real gap is large, fine-tune with small real dataset:
+
+```python
+# 1. Train on 10k synthetic images (as shown above)
+# 2. Fine-tune on 100 real images
+
+model = YOLO('runs/detect/mug_detector/weights/best.pt')  # Load synthetic-trained model
+
+model.train(
+    data='real_dataset.yaml',  # Small real dataset
+    epochs=20,
+    imgsz=640,
+    batch=8,
+    lr0=0.0001,  # Lower learning rate for fine-tuning
+    freeze=10  # Freeze first 10 layers
+)
+```
+
+**Typical Improvement**: +10-20% mAP on real data with just 100 real images!
+
+---
+
+## Lab 3.4: Train and Test Object Detector in Isaac Sim
+
+### Objective
+Train YOLOv8 on shapes dataset (from Lab 3.3) and deploy for real-time detection in Isaac Sim.
+
+### Step 1: Convert Dataset
+
+```bash
+python convert_to_yolo.py
+```
+
+### Step 2: Train Model
+
+```python
+from ultralytics import YOLO
+
+model = YOLO('yolov8n.pt')
+model.train(
+    data='shapes_dataset.yaml',
+    epochs=30,
+    imgsz=640
+)
+```
+
+### Step 3: Deploy in Isaac Sim
+
+```python
+# Use deploy_yolo_isaac.py from above
+# Modify to load your shape detector:
+model = YOLO('runs/detect/shape_detector/weights/best.pt')
+```
+
+### Validation Checklist
+
+- [ ] Training completes without errors
+- [ ] mAP50 > 0.8 on validation set
+- [ ] Model detects shapes in real-time in Isaac Sim (>5 FPS)
+- [ ] Bounding boxes are accurate (>70% IoU)
+- [ ] Model generalizes to new random poses
+
+---
+
+## Advanced: Semantic Segmentation with Mask R-CNN
+
+For pixel-precise masks:
+
+```python
+from detectron2.engine import DefaultTrainer
+from detectron2.config import get_cfg
+from detectron2 import model_zoo
+
+cfg = get_cfg()
+cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+cfg.DATASETS.TRAIN = ("synthetic_mugs",)
+cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+cfg.SOLVER.MAX_ITER = 3000
+
+trainer = DefaultTrainer(cfg)
+trainer.train()
+```
+
+---
+
+## Summary
+
+In this chapter, you learned:
+
+- ✅ Convert Isaac Sim synthetic data to **YOLO**, **COCO**, and **PyTorch** formats
+- ✅ Train **YOLOv8** object detection models with 50+ epochs
+- ✅ Evaluate using **mAP**, **precision**, **recall** metrics
+- ✅ Deploy trained models into **Isaac Sim** for real-time inference
+- ✅ Identify and fix **sim-to-real transfer** issues
+- ✅ Fine-tune on small real datasets for +10-20% accuracy boost
+
+**Next Chapter**: Introduction to **Isaac Gym** for massively parallel reinforcement learning training.
+
+---
+
+## Quiz 3.4: Perception Model Training
+
+1. **What does mAP50 measure?**
+   - a) Model training speed
+   - b) Average precision at 50% IoU threshold
+   - c) Number of parameters in the model
+   - d) GPU memory usage
+
+2. **Why fine-tune on real data after training on synthetic?**
+   - a) Synthetic data is always low quality
+   - b) To bridge the sim-to-real gap with domain-specific features
+   - c) Real data trains faster
+   - d) It's required by YOLO
+
+3. **What YOLO format is used for bounding boxes?**
+   - a) [x_min, y_min, x_max, y_max]
+   - b) [class_id, x_center, y_center, width, height] (normalized)
+   - c) [x, y, radius]
+   - d) [left, top, right, bottom] (pixels)
+
+4. **How can you improve recall on real data if synthetic training has low recall?**
+   - a) Reduce dataset size
+   - b) Increase domain randomization diversity
+   - c) Use a smaller model
+   - d) Train for fewer epochs
+
+<details>
+<summary>**Show Answers**</summary>
+
+1. **b)** Average precision at 50% IoU threshold
+2. **b)** To bridge the sim-to-real gap with domain-specific features
+3. **b)** [class_id, x_center, y_center, width, height] (normalized 0-1)
+4. **b)** Increase domain randomization diversity (lighting, textures, poses)
+
+</details>
+
+---
+
+**Next**: [Chapter 19: Introduction to Isaac Gym](/docs/module-3-isaac/week-10/chapter-19-isaac-gym)

@@ -1,0 +1,671 @@
+---
+id: chapter-2-setup
+title: "Chapter 2: Installing and Configuring ROS 2 Humble"
+sidebar_label: "Ch 2: ROS 2 Setup"
+sidebar_position: 2
+description: Step-by-step guide to installing ROS 2 Humble Hawksbill on Ubuntu 22.04 and verifying the installation
+keywords: [ros2, humble, installation, ubuntu, setup, configuration]
+---
+
+# Chapter 2: Installing and Configuring ROS 2 Humble
+
+**Estimated Reading Time**: 60 minutes (+ 30 minutes hands-on installation)
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+- **LO-1.2.1**: Install ROS 2 Humble Hawksbill on Ubuntu 22.04 using apt packages
+- **LO-1.2.2**: Configure environment variables (source setup.bash) for ROS 2
+- **LO-1.2.3**: Verify installation using ROS 2 CLI tools (ros2 doctor, ros2 topic list)
+- **LO-1.2.4**: Run demo nodes (talker/listener) to confirm working installation
+
+---
+
+## Prerequisites Check
+
+Before installing ROS 2, verify your system meets these requirements:
+
+###  1. Ubuntu Version
+
+ROS 2 Humble officially supports **Ubuntu 22.04 LTS (Jammy Jellyfish)**.
+
+```bash
+lsb_release -a
+```
+
+**Expected output**:
+```
+Distributor ID: Ubuntu
+Description:    Ubuntu 22.04.3 LTS
+Release:        22.04
+Codename:       jammy
+```
+
+**If you don't have Ubuntu 22.04**: See the [Prerequisites](/docs/prerequisites) page for installation instructions.
+
+---
+
+### 2. Locale Setup
+
+ROS 2 requires UTF-8 locale encoding:
+
+```bash
+locale  # Check current locale
+```
+
+If not set to UTF-8, configure it:
+
+```bash
+sudo apt update && sudo apt install locales
+sudo locale-gen en_US en_US.UTF-8
+sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
+
+---
+
+### 3. System Updates
+
+Ensure your system is up-to-date:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+**Expected time**: 5-10 minutes depending on pending updates
+
+---
+
+## Installing ROS 2 Humble
+
+ROS 2 can be installed via binary packages (apt) or built from source. We'll use **apt** for simplicity and reliability.
+
+### Step 1: Setup Sources
+
+Enable the Ubuntu Universe repository:
+
+```bash
+sudo apt install software-properties-common
+sudo add-apt-repository universe
+```
+
+---
+
+### Step 2: Add ROS 2 Repository
+
+Add the ROS 2 apt repository to your system:
+
+```bash
+# Install curl if not already present
+sudo apt update && sudo apt install curl -y
+
+# Add ROS 2 GPG key
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+# Add ROS 2 repository to sources list
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+```
+
+---
+
+### Step 3: Install ROS 2 Packages
+
+Update apt cache and install ROS 2:
+
+```bash
+sudo apt update
+```
+
+You have three installation options:
+
+#### Option A: Desktop Install (Recommended for Learning)
+Includes RViz, demos, tutorials:
+
+```bash
+sudo apt install ros-humble-desktop -y
+```
+
+**Size**: ~1.5 GB
+**Time**: 10-15 minutes
+
+---
+
+#### Option B: ROS-Base Install (Minimal)
+Communication libraries, message packages, command-line tools (no GUI):
+
+```bash
+sudo apt install ros-humble-ros-base -y
+```
+
+**Size**: ~500 MB
+**Time**: 5-8 minutes
+
+---
+
+#### Option C: Development Tools
+Full desktop + build tools (colcon, rosdep):
+
+```bash
+sudo apt install ros-humble-desktop ros-dev-tools -y
+```
+
+**Size**: ~1.7 GB
+**Time**: 12-18 minutes
+
+**For this textbook, choose Option C (Desktop + Dev Tools).**
+
+---
+
+### Step 4: Install Development Tools
+
+If you chose Option A or B, install build tools separately:
+
+```bash
+sudo apt install ros-dev-tools -y
+```
+
+This includes:
+- **colcon**: Build tool for ROS 2 packages
+- **rosdep**: Dependency management tool
+- **python3-vcstool**: Version control tool for repositories
+
+---
+
+## Configuring Your Environment
+
+### Understanding `setup.bash`
+
+ROS 2 uses environment variables to locate packages and executables. The `setup.bash` script configures these variables.
+
+**Important**: You must source `setup.bash` in **every new terminal** before using ROS 2 commands.
+
+---
+
+### Option 1: Manual Sourcing (Temporary)
+
+Source ROS 2 in your current terminal:
+
+```bash
+source /opt/ros/humble/setup.bash
+```
+
+**Verification**:
+```bash
+echo $ROS_DISTRO
+# Expected output: humble
+```
+
+**Downside**: You must run this command in every new terminal session.
+
+---
+
+### Option 2: Automatic Sourcing (Recommended)
+
+Add the source command to your `.bashrc` so it runs automatically:
+
+```bash
+echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Verification**: Open a new terminal and check:
+```bash
+echo $ROS_DISTRO
+# Expected output: humble
+```
+
+**Important Environment Variables**:
+- `ROS_DISTRO`: ROS 2 version (humble)
+- `ROS_VERSION`: ROS major version (2)
+- `ROS_PYTHON_VERSION`: Python version (3)
+- `AMENT_PREFIX_PATH`: Package search paths
+
+---
+
+## Verifying Your Installation
+
+### 1. Check ROS 2 Installation
+
+Run the ROS 2 doctor command:
+
+```bash
+ros2 doctor
+```
+
+**Expected output** (abbreviated):
+```
+Checking network configuration...
+ * Network connectivity: OK
+ * ROS_DOMAIN_ID:  (default: 0)
+
+Checking packages...
+ * ROS 2 middleware: rmw_fastrtps_cpp
+ * ROS 2 nodes: 0
+
+All checks passed!
+```
+
+**If you see errors**: Check that you sourced `setup.bash` correctly.
+
+---
+
+### 2. Check Available Commands
+
+List all ROS 2 CLI commands:
+
+```bash
+ros2 --help
+```
+
+**Key commands** (you'll use these frequently):
+- `ros2 run`: Execute a node from a package
+- `ros2 topic`: Interact with topics
+- `ros2 node`: Inspect running nodes
+- `ros2 service`: Call services
+- `ros2 param`: Get/set parameters
+- `ros2 launch`: Start launch files
+
+---
+
+### 3. Check Python Version
+
+ROS 2 Humble requires Python 3.10+:
+
+```bash
+python3 --version
+```
+
+**Expected**: Python 3.10.x or higher
+
+---
+
+## Running Demo Nodes
+
+Let's verify ROS 2 works by running the classic talker/listener demo.
+
+### Understanding the Demo
+
+- **Talker Node**: Publishes "Hello World" messages to a topic
+- **Listener Node**: Subscribes to the topic and prints received messages
+
+This demonstrates pub-sub communication, the most common ROS 2 pattern.
+
+---
+
+### Running Talker (Terminal 1)
+
+Open a terminal and run:
+
+```bash
+ros2 run demo_nodes_cpp talker
+```
+
+**Expected output**:
+```
+[INFO] [1701234567.123456789] [talker]: Publishing: 'Hello World: 1'
+[INFO] [1701234568.123456789] [talker]: Publishing: 'Hello World: 2'
+[INFO] [1701234569.123456789] [talker]: Publishing: 'Hello World: 3'
+...
+```
+
+**Leave this terminal running.**
+
+---
+
+### Running Listener (Terminal 2)
+
+Open a **second terminal** and run:
+
+```bash
+source /opt/ros/humble/setup.bash  # If not in .bashrc
+ros2 run demo_nodes_cpp listener
+```
+
+**Expected output**:
+```
+[INFO] [1701234567.234567890] [listener]: I heard: [Hello World: 1]
+[INFO] [1701234568.234567890] [listener]: I heard: [Hello World: 2]
+[INFO] [1701234569.234567890] [listener]: I heard: [Hello World: 3]
+...
+```
+
+**Success!** The listener receives messages from the talker.
+
+---
+
+### What Just Happened?
+
+```mermaid
+graph LR
+    A["Talker Node"] -->|publishes to| B["/chatter topic"]
+    B -->|subscribes from| C["Listener Node"]
+
+    style A fill:#4CAF50
+    style B fill:#2196F3
+    style C fill:#FF9800
+
+```
+
+1. **Talker node** publishes messages to the `/chatter` topic
+2. **Listener node** subscribes to `/chatter` and receives messages
+3. **DDS middleware** (FastRTPS) handles communication automatically
+
+**Key Insight**: Nodes don't need to know about each other's existence. They only need to agree on the topic name.
+
+---
+
+### Inspecting the System
+
+Open a **third terminal** and explore:
+
+```bash
+# List running nodes
+ros2 node list
+
+# Expected output:
+# /talker
+# /listener
+
+# List active topics
+ros2 topic list
+
+# Expected output:
+# /chatter
+# /parameter_events
+# /rosout
+
+# See messages being published
+ros2 topic echo /chatter
+
+# Get topic info
+ros2 topic info /chatter
+
+# Expected output:
+# Type: std_msgs/msg/String
+# Publisher count: 1
+# Subscription count: 1
+```
+
+---
+
+### Stopping the Nodes
+
+Press `Ctrl+C` in each terminal to stop the nodes gracefully.
+
+---
+
+## Common Installation Issues
+
+### Issue 1: "ros2: command not found"
+
+**Cause**: `setup.bash` not sourced
+
+**Solution**:
+```bash
+source /opt/ros/humble/setup.bash
+```
+
+Or add to `.bashrc`:
+```bash
+echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
+
+---
+
+### Issue 2: "E: Unable to locate package ros-humble-desktop"
+
+**Cause**: ROS 2 repository not added correctly
+
+**Solution**: Re-add the repository:
+```bash
+sudo apt update
+sudo apt install curl -y
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+sudo apt update
+```
+
+---
+
+### Issue 3: Talker and listener don't communicate
+
+**Cause**: Different `ROS_DOMAIN_ID` values
+
+**Solution**: Check domain ID in both terminals:
+```bash
+echo $ROS_DOMAIN_ID
+```
+
+If different, set to same value (default: 0):
+```bash
+export ROS_DOMAIN_ID=0
+```
+
+---
+
+### Issue 4: Insufficient disk space
+
+**Cause**: ROS 2 Desktop requires ~1.5 GB
+
+**Solution**: Free up space:
+```bash
+sudo apt autoremove -y
+sudo apt clean
+```
+
+Or install ROS-Base instead (minimal):
+```bash
+sudo apt install ros-humble-ros-base -y
+```
+
+---
+
+## Lab Exercise 1.2: Install ROS 2 and Run Demo Nodes
+
+### Objective
+Complete a full ROS 2 installation and verify it by running talker/listener nodes.
+
+### Prerequisites
+- Ubuntu 22.04 LTS
+- 20 GB free disk space
+- Internet connection
+
+### Instructions
+
+#### Part 1: Installation (20 minutes)
+
+1. **System Check**:
+   ```bash
+   lsb_release -a  # Verify Ubuntu 22.04
+   df -h           # Check disk space (>20 GB free)
+   ```
+
+2. **Update System**:
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+
+3. **Install ROS 2 Humble** (follow Step 1-4 above):
+   - Setup sources
+   - Add ROS 2 repository
+   - Install `ros-humble-desktop` and `ros-dev-tools`
+   - Configure `.bashrc` for auto-sourcing
+
+4. **Verify Installation**:
+   ```bash
+   echo $ROS_DISTRO  # Should output: humble
+   ros2 doctor       # Should pass all checks
+   ros2 --help       # Should list commands
+   ```
+
+---
+
+#### Part 2: Run Demo Nodes (10 minutes)
+
+1. **Terminal 1 - Talker**:
+   ```bash
+   ros2 run demo_nodes_cpp talker
+   ```
+
+2. **Terminal 2 - Listener**:
+   ```bash
+   ros2 run demo_nodes_cpp listener
+   ```
+
+3. **Terminal 3 - Inspection**:
+   ```bash
+   ros2 node list
+   ros2 topic list
+   ros2 topic echo /chatter
+   ros2 topic info /chatter
+   ```
+
+4. **Take a screenshot** showing all three terminals working simultaneously.
+
+---
+
+#### Part 3: Python Demo (5 minutes)
+
+ROS 2 supports both C++ and Python. Try Python nodes:
+
+1. **Terminal 1**:
+   ```bash
+   ros2 run demo_nodes_py talker
+   ```
+
+2. **Terminal 2**:
+   ```bash
+   ros2 run demo_nodes_py listener
+   ```
+
+**Observation**: Python and C++ nodes can communicate seamlessly!
+
+---
+
+### Validation Checklist
+
+- [ ] `ros2 doctor` passes all checks
+- [ ] Talker node publishes messages
+- [ ] Listener node receives messages
+- [ ] `ros2 topic list` shows `/chatter`
+- [ ] Python and C++ nodes can communicate
+- [ ] Screenshot captured
+
+### Deliverable
+- Screenshot of three terminals (talker, listener, ros2 topic echo)
+- Note any errors encountered and how you resolved them
+
+---
+
+## Quiz 1.2: Installation and Configuration
+
+### Question 1
+**What is the purpose of sourcing `/opt/ros/humble/setup.bash`?**
+
+- A) It installs ROS 2 packages
+- B) It configures environment variables for ROS 2 ✓
+- C) It starts ROS 2 nodes automatically
+- D) It updates ROS 2 to the latest version
+
+**Explanation**: `setup.bash` sets environment variables like `ROS_DISTRO`, `PATH`, and `AMENT_PREFIX_PATH` so ROS 2 commands and packages can be found.
+
+---
+
+### Question 2
+**Which ROS 2 installation option includes RViz and GUI tools?**
+
+- A) ros-base
+- B) ros-dev-tools
+- C) ros-humble-desktop ✓
+- D) ros-minimal
+
+**Explanation**: `ros-humble-desktop` includes visualization tools (RViz), demo packages, and tutorials. `ros-base` is command-line only.
+
+---
+
+### Question 3
+**True or False: You must source `setup.bash` in every new terminal unless you add it to `.bashrc`.**
+
+- True ✓
+
+**Explanation**: Environment variables are terminal-specific. Adding `source` to `.bashrc` automates this for all new terminals.
+
+---
+
+### Question 4
+**What command checks if ROS 2 is installed correctly?**
+
+- A) ros2 --version
+- B) ros2 check
+- C) ros2 doctor ✓
+- D) ros2 test
+
+**Explanation**: `ros2 doctor` performs system checks including network configuration, middleware setup, and package availability.
+
+---
+
+### Question 5
+**The talker and listener demo demonstrates which ROS 2 communication pattern?**
+
+- A) Services
+- B) Actions
+- C) Topics (Publish-Subscribe) ✓
+- D) Parameters
+
+**Explanation**: The talker **publishes** to a topic (`/chatter`) and the listener **subscribes** to receive messages. This is the pub-sub pattern.
+
+---
+
+### Question 6
+**What is the default ROS_DOMAIN_ID value?**
+
+- A) 1
+- B) 0 ✓
+- C) 100
+- D) None (must be set manually)
+
+**Explanation**: `ROS_DOMAIN_ID` defaults to 0. It separates different ROS 2 systems on the same network (useful in labs with multiple robots).
+
+---
+
+### Question 7
+**Short Answer: Why is ROS 2 Humble called "Humble Hawksbill"?**
+
+**Expected Answer**: ROS 2 releases follow alphabetical naming with sea turtle species. Humble Hawksbill is the "H" release (8th letter). "Humble" reflects the project's community-driven nature, and "Hawksbill" is a critically endangered sea turtle species.
+
+---
+
+## Key Takeaways
+
+✅ **ROS 2 Humble** is the LTS (Long Term Support) version supported until May 2027
+
+✅ **Installation** via apt is straightforward on Ubuntu 22.04
+
+✅ **Environment setup** requires sourcing `setup.bash` (add to `.bashrc` for automation)
+
+✅ **Talker/Listener demo** validates installation and demonstrates pub-sub communication
+
+✅ **Python and C++** nodes can communicate seamlessly via DDS middleware
+
+---
+
+## What's Next?
+
+In **Chapter 3**, you'll create your first ROS 2 package and write custom publisher/subscriber nodes.
+
+[Continue to Chapter 3: ROS 2 Nodes and Communication →](/docs/module-1-ros2/week-2/chapter-3-nodes)
+
+---
+
+## Additional Resources
+
+- **ROS 2 Installation Docs**: [docs.ros.org/en/humble/Installation.html](https://docs.ros.org/en/humble/Installation.html)
+- **Ubuntu 22.04 Download**: [ubuntu.com/download/desktop](https://ubuntu.com/download/desktop)
+- **Troubleshooting Guide**: [docs.ros.org/en/humble/Troubleshooting.html](https://docs.ros.org/en/humble/Troubleshooting.html)
+- **ROS 2 CLI Cheat Sheet**: [ros2cli.com](https://github.com/Ubuntu Robotics/ros2_cheats)
+
+---
+
+**Progress**: Module 1, Week 1, Chapter 2 of 32 | [View all chapters](/docs/intro)

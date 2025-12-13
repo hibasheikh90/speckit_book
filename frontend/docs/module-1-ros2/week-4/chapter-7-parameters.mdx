@@ -1,0 +1,776 @@
+---
+id: chapter-7-parameters
+title: "Chapter 7: Parameters for Runtime Configuration"
+sidebar_label: "Ch 7: Parameters"
+sidebar_position: 7
+description: Master ROS 2 parameters for runtime configuration, parameter files, and dynamic reconfigure
+keywords: [ros2, parameters, configuration, yaml, dynamic reconfigure, runtime config]
+---
+
+# Chapter 7: Parameters for Runtime Configuration
+
+**Estimated Reading Time**: 45 minutes
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+- **LO-1.7.1**: Declare and use parameters in ROS 2 nodes
+- **LO-1.7.2**: Set parameters from command line and YAML files
+- **LO-1.7.3**: Implement parameter callbacks for runtime updates
+- **LO-1.7.4**: Understand parameter types and validation
+- **LO-1.7.5**: Use ROS 2 CLI tools for parameter introspection
+
+---
+
+## 1. What are Parameters?
+
+**Parameters** are configuration values for nodes that can be set at runtime without changing code. Think of them as adjustable settings for your robot.
+
+### Why Use Parameters?
+
+**Without Parameters** (Hardcoded Values):
+```python
+class RobotController:
+    def __init__(self):
+        self.max_speed = 0.5  # ❌ Hardcoded!
+        self.sensor_rate = 10  # ❌ Hardcoded!
+```
+
+**Problem**: To change settings, you must:
+1. Edit source code
+2. Rebuild
+3. Redeploy
+4. Restart node
+
+**With Parameters** (Configurable):
+```python
+class RobotController:
+    def __init__(self):
+        self.max_speed = self.get_parameter('max_speed').value  # ✅ Configurable!
+        self.sensor_rate = self.get_parameter('sensor_rate').value  # ✅ Configurable!
+```
+
+**Benefits**:
+- Change settings without code changes
+- Different configurations for different environments (sim vs real robot)
+- Runtime adjustments (tune PID gains, adjust speeds)
+- Share configurations via YAML files
+
+---
+
+## 2. Parameter Types
+
+ROS 2 supports these parameter types:
+
+| Type | Python Type | Example Value | Use Case |
+|------|-------------|---------------|----------|
+| `bool` | `bool` | `True`, `False` | Enable/disable features |
+| `int` | `int` | `42`, `-10` | Counts, IDs, enum values |
+| `double` | `float` | `3.14`, `0.5` | Speeds, gains, thresholds |
+| `string` | `str` | `"robot_1"` | Names, file paths |
+| `byte_array` | `bytes` | `b'\x00\x01'` | Binary data |
+| `bool_array` | `list[bool]` | `[True, False]` | Sensor enable flags |
+| `integer_array` | `list[int]` | `[1, 2, 3]` | Joint IDs |
+| `double_array` | `list[float]` | `[0.1, 0.2]` | PID gains |
+| `string_array` | `list[str]` | `["cam1", "cam2"]` | Sensor names |
+
+---
+
+## 3. Declaring Parameters
+
+In ROS 2, parameters must be **declared** before use. This provides type safety and default values.
+
+### Basic Parameter Declaration
+
+```python
+#!/usr/bin/env python3
+"""
+Node with Parameters
+File: parameterized_node.py
+"""
+
+import rclpy
+from rclpy.node import Node
+
+
+class ParameterizedNode(Node):
+    """Node demonstrating parameter usage."""
+
+    def __init__(self):
+        super().__init__('parameterized_node')
+
+        # Declare parameters with default values
+        self.declare_parameter('robot_name', 'robot_1')  # string
+        self.declare_parameter('max_speed', 0.5)         # double
+        self.declare_parameter('sensor_rate', 10)        # int
+        self.declare_parameter('debug_mode', False)      # bool
+
+        # Get parameter values
+        robot_name = self.get_parameter('robot_name').value
+        max_speed = self.get_parameter('max_speed').value
+        sensor_rate = self.get_parameter('sensor_rate').value
+        debug_mode = self.get_parameter('debug_mode').value
+
+        # Log current configuration
+        self.get_logger().info('=== Configuration ===')
+        self.get_logger().info(f'Robot Name: {robot_name}')
+        self.get_logger().info(f'Max Speed: {max_speed} m/s')
+        self.get_logger().info(f'Sensor Rate: {sensor_rate} Hz')
+        self.get_logger().info(f'Debug Mode: {debug_mode}')
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = ParameterizedNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+### Running with Default Parameters
+
+```bash
+python3 parameterized_node.py
+```
+
+**Output:**
+```
+[INFO] [1638360000.123456] [parameterized_node]: === Configuration ===
+[INFO] [1638360000.123789] [parameterized_node]: Robot Name: robot_1
+[INFO] [1638360000.124012] [parameterized_node]: Max Speed: 0.5 m/s
+[INFO] [1638360000.124234] [parameterized_node]: Sensor Rate: 10 Hz
+[INFO] [1638360000.124456] [parameterized_node]: Debug Mode: False
+```
+
+---
+
+## 4. Setting Parameters from Command Line
+
+You can override default parameters when launching a node.
+
+### Command Line Override
+
+```bash
+# Set single parameter
+python3 parameterized_node.py --ros-args -p max_speed:=1.0
+
+# Set multiple parameters
+python3 parameterized_node.py --ros-args \
+    -p robot_name:=alpha \
+    -p max_speed:=1.5 \
+    -p sensor_rate:=20 \
+    -p debug_mode:=true
+```
+
+**Output:**
+```
+[INFO] [1638360000.123456] [parameterized_node]: === Configuration ===
+[INFO] [1638360000.123789] [parameterized_node]: Robot Name: alpha
+[INFO] [1638360000.124012] [parameterized_node]: Max Speed: 1.5 m/s
+[INFO] [1638360000.124234] [parameterized_node]: Sensor Rate: 20 Hz
+[INFO] [1638360000.124456] [parameterized_node]: Debug Mode: True
+```
+
+---
+
+## 5. Parameter Files (YAML)
+
+For complex configurations, use YAML files instead of long command lines.
+
+### Parameter File Example
+
+**File: `robot_config.yaml`**
+```yaml
+parameterized_node:
+  ros__parameters:
+    robot_name: "beta"
+    max_speed: 2.0
+    sensor_rate: 50
+    debug_mode: true
+```
+
+**Structure**:
+- Top level: Node name (`parameterized_node`)
+- Second level: `ros__parameters` (required)
+- Parameters: `key: value` pairs
+
+### Loading Parameter File
+
+```bash
+python3 parameterized_node.py --ros-args --params-file robot_config.yaml
+```
+
+**Output:**
+```
+[INFO] [1638360000.123456] [parameterized_node]: === Configuration ===
+[INFO] [1638360000.123789] [parameterized_node]: Robot Name: beta
+[INFO] [1638360000.124012] [parameterized_node]: Max Speed: 2.0 m/s
+[INFO] [1638360000.124234] [parameterized_node]: Sensor Rate: 50 Hz
+[INFO] [1638360000.124456] [parameterized_node]: Debug Mode: True
+```
+
+### Array Parameters in YAML
+
+```yaml
+sensor_node:
+  ros__parameters:
+    camera_names: ["cam_left", "cam_right", "cam_front"]
+    joint_ids: [1, 2, 3, 4, 5]
+    pid_gains: [0.1, 0.01, 0.005]
+    sensor_enabled: [true, true, false, true]
+```
+
+---
+
+## 6. Dynamic Parameters (Runtime Updates)
+
+Parameters can be changed while the node is running using **parameter callbacks**.
+
+### Node with Parameter Callback
+
+```python
+#!/usr/bin/env python3
+"""
+Node with Dynamic Parameter Updates
+File: dynamic_parameters_node.py
+"""
+
+import rclpy
+from rclpy.node import Node
+from rcl_interfaces.msg import ParameterDescriptor
+
+
+class DynamicParametersNode(Node):
+    """Node demonstrating runtime parameter updates."""
+
+    def __init__(self):
+        super().__init__('dynamic_parameters_node')
+
+        # Declare parameter with description
+        descriptor = ParameterDescriptor(
+            description='Maximum robot speed in m/s'
+        )
+        self.declare_parameter('max_speed', 0.5, descriptor)
+
+        # Add parameter callback
+        self.add_on_set_parameters_callback(self.parameters_callback)
+
+        # Timer to show current speed
+        self.create_timer(2.0, self.show_speed)
+
+        self.get_logger().info('Dynamic parameters node started')
+        self.get_logger().info('Change max_speed with: ros2 param set')
+
+    def parameters_callback(self, params):
+        """Called when parameters are updated."""
+        for param in params:
+            if param.name == 'max_speed':
+                new_speed = param.value
+                self.get_logger().info(f'Max speed updated to: {new_speed} m/s')
+
+                # Validate parameter
+                if new_speed < 0.0 or new_speed > 3.0:
+                    self.get_logger().error(
+                        f'Invalid speed: {new_speed}. Must be 0-3 m/s'
+                    )
+                    from rcl_interfaces.msg import SetParametersResult
+                    return SetParametersResult(successful=False)
+
+        from rcl_interfaces.msg import SetParametersResult
+        return SetParametersResult(successful=True)
+
+    def show_speed(self):
+        """Display current max speed."""
+        max_speed = self.get_parameter('max_speed').value
+        self.get_logger().info(f'Current max speed: {max_speed} m/s')
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = DynamicParametersNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+### Changing Parameters at Runtime
+
+**Terminal 1 (Run Node):**
+```bash
+python3 dynamic_parameters_node.py
+```
+
+**Terminal 2 (Change Parameter):**
+```bash
+# Get current value
+ros2 param get /dynamic_parameters_node max_speed
+
+# Set new value
+ros2 param set /dynamic_parameters_node max_speed 1.5
+```
+
+**Node Output (Terminal 1):**
+```
+[INFO] [1638360000.123456] [dynamic_parameters_node]: Dynamic parameters node started
+[INFO] [1638360000.123789] [dynamic_parameters_node]: Current max speed: 0.5 m/s
+[INFO] [1638360002.124012] [dynamic_parameters_node]: Current max speed: 0.5 m/s
+[INFO] [1638360003.567890] [dynamic_parameters_node]: Max speed updated to: 1.5 m/s
+[INFO] [1638360004.124234] [dynamic_parameters_node]: Current max speed: 1.5 m/s
+```
+
+---
+
+## 7. Parameter Validation
+
+Always validate parameters to prevent invalid configurations.
+
+### Parameter Validation Example
+
+```python
+def parameters_callback(self, params):
+    """Validate and apply parameter updates."""
+    for param in params:
+        if param.name == 'max_speed':
+            # Check range
+            if param.value < 0.0 or param.value > 3.0:
+                self.get_logger().error(
+                    f'max_speed must be 0-3, got {param.value}'
+                )
+                return SetParametersResult(successful=False)
+
+        elif param.name == 'robot_name':
+            # Check not empty
+            if len(param.value) == 0:
+                self.get_logger().error('robot_name cannot be empty')
+                return SetParametersResult(successful=False)
+
+        elif param.name == 'sensor_rate':
+            # Check valid rates
+            valid_rates = [10, 20, 50, 100]
+            if param.value not in valid_rates:
+                self.get_logger().error(
+                    f'sensor_rate must be one of {valid_rates}'
+                )
+                return SetParametersResult(successful=False)
+
+    # All parameters valid
+    return SetParametersResult(successful=True)
+```
+
+**Best Practices**:
+- ✅ Validate ranges (min/max)
+- ✅ Check allowed values (enums)
+- ✅ Verify non-empty strings
+- ✅ Log clear error messages
+- ✅ Return `successful=False` for invalid parameters
+
+---
+
+## 8. Parameter Introspection with ROS 2 CLI
+
+### List Node Parameters
+
+```bash
+ros2 param list /parameterized_node
+```
+
+**Output:**
+```
+debug_mode
+max_speed
+robot_name
+sensor_rate
+```
+
+### Get Parameter Value
+
+```bash
+ros2 param get /parameterized_node max_speed
+```
+
+**Output:**
+```
+Double value is: 0.5
+```
+
+### Set Parameter Value
+
+```bash
+ros2 param set /parameterized_node max_speed 1.0
+```
+
+**Output:**
+```
+Set parameter successful
+```
+
+### Dump All Parameters to File
+
+```bash
+# Save current parameters to YAML
+ros2 param dump /parameterized_node > saved_config.yaml
+```
+
+**Generated File:**
+```yaml
+parameterized_node:
+  ros__parameters:
+    debug_mode: false
+    max_speed: 1.0
+    robot_name: robot_1
+    sensor_rate: 10
+```
+
+### Load Parameters from File
+
+```bash
+ros2 param load /parameterized_node saved_config.yaml
+```
+
+---
+
+## 9. Real-World Example: Robot Controller
+
+### Configurable Robot Controller
+
+```python
+#!/usr/bin/env python3
+"""
+Parameterized Robot Controller
+File: robot_controller_params.py
+"""
+
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Twist
+
+
+class RobotController(Node):
+    def __init__(self):
+        super().__init__('robot_controller')
+
+        # Declare parameters
+        self.declare_parameter('max_linear_speed', 0.5)   # m/s
+        self.declare_parameter('max_angular_speed', 1.0)  # rad/s
+        self.declare_parameter('acceleration_limit', 0.2) # m/s²
+        self.declare_parameter('control_frequency', 10.0) # Hz
+        self.declare_parameter('enable_safety_limits', True)
+
+        # Get parameters
+        self.max_linear = self.get_parameter('max_linear_speed').value
+        self.max_angular = self.get_parameter('max_angular_speed').value
+        self.accel_limit = self.get_parameter('acceleration_limit').value
+        freq = self.get_parameter('control_frequency').value
+        self.safety_enabled = self.get_parameter('enable_safety_limits').value
+
+        # Publisher
+        self.publisher = self.create_publisher(Twist, '/cmd_vel', 10)
+
+        # Control loop
+        self.timer = self.create_timer(1.0 / freq, self.control_loop)
+
+        self.current_linear = 0.0
+        self.current_angular = 0.0
+
+        self.get_logger().info('Robot controller started')
+        self.get_logger().info(f'Max linear: {self.max_linear} m/s')
+        self.get_logger().info(f'Max angular: {self.max_angular} rad/s')
+
+    def control_loop(self):
+        """Control loop running at configured frequency."""
+        # Simulate increasing speed
+        target_linear = 0.8
+        target_angular = 0.5
+
+        # Apply acceleration limit
+        dt = 1.0 / self.get_parameter('control_frequency').value
+        max_delta = self.accel_limit * dt
+
+        # Gradually increase speed
+        if abs(target_linear - self.current_linear) > max_delta:
+            self.current_linear += max_delta if target_linear > self.current_linear else -max_delta
+        else:
+            self.current_linear = target_linear
+
+        # Apply safety limits
+        if self.safety_enabled:
+            self.current_linear = max(-self.max_linear, min(self.max_linear, self.current_linear))
+            self.current_angular = max(-self.max_angular, min(self.max_angular, self.current_angular))
+
+        # Publish command
+        msg = Twist()
+        msg.linear.x = self.current_linear
+        msg.angular.z = self.current_angular
+        self.publisher.publish(msg)
+
+        self.get_logger().info(f'Cmd: linear={self.current_linear:.2f}, angular={self.current_angular:.2f}')
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = RobotController()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+**Configuration File: `robot_slow.yaml`**
+```yaml
+robot_controller:
+  ros__parameters:
+    max_linear_speed: 0.3
+    max_angular_speed: 0.5
+    acceleration_limit: 0.1
+    control_frequency: 20.0
+    enable_safety_limits: true
+```
+
+**Configuration File: `robot_fast.yaml`**
+```yaml
+robot_controller:
+  ros__parameters:
+    max_linear_speed: 2.0
+    max_angular_speed: 2.0
+    acceleration_limit: 0.5
+    control_frequency: 50.0
+    enable_safety_limits: true
+```
+
+**Usage:**
+```bash
+# Slow robot config
+python3 robot_controller_params.py --ros-args --params-file robot_slow.yaml
+
+# Fast robot config
+python3 robot_controller_params.py --ros-args --params-file robot_fast.yaml
+```
+
+---
+
+## Lab Exercise 1.7: Parameterized Sensor Node
+
+### Objective
+
+Build a sensor node with configurable parameters and runtime updates.
+
+### Requirements
+
+Create `sensor_node_params.py`:
+
+**Parameters**:
+- `sensor_name` (string): Sensor identifier
+- `publish_rate` (int): Hz (allowed: 1, 5, 10, 20, 50)
+- `min_value` (double): Minimum sensor reading
+- `max_value` (double): Maximum sensor reading
+- `enable_noise` (bool): Add random noise to readings
+
+**Functionality**:
+- Publish random sensor values to `/sensor/data` (Float32)
+- Values between min_value and max_value
+- Add noise (±10%) if enable_noise is true
+- Support runtime parameter updates
+
+**Validation**:
+- publish_rate must be in [1, 5, 10, 20, 50]
+- max_value must be > min_value
+
+**Parameter File**: `sensor_config.yaml`
+```yaml
+sensor_node_params:
+  ros__parameters:
+    sensor_name: "temperature"
+    publish_rate: 10
+    min_value: 20.0
+    max_value: 30.0
+    enable_noise: true
+```
+
+### Starter Code
+
+```python
+#!/usr/bin/env python3
+"""
+Lab 1.7: Parameterized Sensor Node
+TODO: Complete the implementation
+"""
+
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import Float32
+import random
+
+
+class SensorNodeParams(Node):
+    def __init__(self):
+        super().__init__('sensor_node_params')
+
+        # TODO: Declare parameters
+        # sensor_name (string)
+        # publish_rate (int)
+        # min_value (double)
+        # max_value (double)
+        # enable_noise (bool)
+
+        # TODO: Add parameter callback
+
+        # TODO: Create publisher (/sensor/data, Float32)
+
+        # TODO: Create timer based on publish_rate
+
+        self.get_logger().info('Sensor node started')
+
+    def parameters_callback(self, params):
+        """Validate and apply parameter updates."""
+        # TODO: Validate publish_rate in [1, 5, 10, 20, 50]
+        # TODO: Validate max_value > min_value
+        # TODO: Return SetParametersResult
+        pass
+
+    def publish_sensor_data(self):
+        """Publish sensor reading."""
+        # TODO: Generate random value between min_value and max_value
+        # TODO: Add noise if enable_noise is true
+        # TODO: Publish
+        pass
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = SensorNodeParams()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+### Acceptance Criteria
+
+- ✅ All parameters declared and used correctly
+- ✅ Parameter validation works (reject invalid values)
+- ✅ Runtime parameter updates work
+- ✅ Sensor data published at correct rate
+- ✅ YAML config file loads correctly
+
+### Testing
+
+```bash
+# Terminal 1: Run with config file
+python3 sensor_node_params.py --ros-args --params-file sensor_config.yaml
+
+# Terminal 2: Test runtime updates
+ros2 param get /sensor_node_params publish_rate
+ros2 param set /sensor_node_params publish_rate 20
+ros2 param set /sensor_node_params publish_rate 15  # Should fail (invalid)
+
+# Terminal 3: Verify publishing
+ros2 topic hz /sensor/data
+ros2 topic echo /sensor/data
+```
+
+---
+
+## Quiz 1.7: Parameters
+
+### Question 1
+**Why should you use parameters instead of hardcoded values?**
+
+- A) Parameters are faster
+- B) Parameters allow runtime configuration without code changes ✓
+- C) Parameters use less memory
+- D) Parameters are required by ROS 2
+
+**Explanation**: Parameters enable configuration changes without modifying code, making it easy to adjust settings for different environments or conditions.
+
+---
+
+### Question 2
+**What is the purpose of a parameter callback?**
+
+- A) To publish parameter values
+- B) To respond to runtime parameter changes ✓
+- C) To declare parameters
+- D) To delete parameters
+
+**Explanation**: Parameter callbacks are called when parameters are updated at runtime, allowing nodes to react to configuration changes.
+
+---
+
+### Question 3
+**True or False: Parameters must be declared before they can be used in ROS 2.**
+
+- True ✓
+
+**Explanation**: ROS 2 requires explicit parameter declaration for type safety and to provide default values.
+
+---
+
+### Question 4
+**What command lists all parameters for a node? (Short answer)**
+
+**Expected Answer**: `ros2 param list /node_name`
+
+---
+
+### Question 5
+**Name two benefits of using YAML parameter files. (Short answer)**
+
+**Expected Answers** (any two):
+- Easy to share configurations across nodes
+- Avoid long command-line arguments
+- Version control configurations
+- Different configs for different environments (sim vs real)
+- Organize complex configurations
+
+---
+
+## Key Takeaways
+
+✅ **Parameters** enable runtime configuration without code changes
+
+✅ **Declaration required**: Use `declare_parameter()` before accessing parameters
+
+✅ **Parameter types**: bool, int, double, string, and arrays
+
+✅ **YAML files**: Store complex configurations for easy loading
+
+✅ **Parameter callbacks**: Respond to runtime parameter changes and validate
+
+✅ **CLI tools**: `ros2 param list`, `get`, `set`, `dump`, `load`
+
+✅ **Best practices**: Always validate parameters, provide defaults, use descriptive names
+
+---
+
+## What's Next?
+
+In **Chapter 8**, you'll learn about **Launch Files** - the mechanism for starting complex multi-node systems with all their configurations.
+
+[Continue to Chapter 8: Launch Files →](/docs/module-1-ros2/week-4/chapter-8-launch)
+
+---
+
+## Additional Resources
+
+- **Parameters Tutorial**: [docs.ros.org/en/humble/Tutorials/Using-Parameters-In-A-Class-Python.html](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Using-Parameters-In-A-Class-Python.html)
+- **Parameter CLI Reference**: [docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Parameters.html](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Parameters.html)
+- **YAML Parameter Files**: [docs.ros.org/en/humble/How-To-Guides/Using-ros2-param.html](https://docs.ros.org/en/humble/How-To-Guides/Using-ros2-param.html)
+
+---
+
+**Progress**: Module 1, Week 4, Chapter 7 of 32 | [View all chapters](/docs/intro)

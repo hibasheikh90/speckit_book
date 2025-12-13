@@ -1,0 +1,746 @@
+---
+id: module-1-assessment
+title: "Module 1 Assessment: ROS 2 Fundamentals"
+sidebar_label: "Module 1 Assessment"
+sidebar_position: 9
+description: Comprehensive assessment covering ROS 2 nodes, topics, services, actions, parameters, and launch files
+keywords: [ros2, assessment, quiz, project, evaluation, fundamentals]
+---
+
+# Module 1 Assessment: ROS 2 Fundamentals
+
+**Total Time**: 120 minutes (60 minutes quiz + 60 minutes project)
+
+## Assessment Structure
+
+This assessment consists of two parts:
+
+1. **Knowledge Quiz** (40 points) - 20 questions testing conceptual understanding
+2. **Hands-On Project** (60 points) - Build a complete multi-node robot system
+
+**Passing Score**: 70/100 points
+
+---
+
+## Part 1: Knowledge Quiz (40 points)
+
+### Section A: Multiple Choice (20 questions × 1 point = 20 points)
+
+#### Question 1
+**What is the primary benefit of ROS 2's node-based architecture?**
+
+- A) Faster execution
+- B) Modularity and fault isolation
+- C) Smaller file sizes
+- D) Easier installation
+
+<details>
+<summary>Answer</summary>
+**B) Modularity and fault isolation**
+
+Node-based architecture allows independent development, testing, and fault isolation.
+</details>
+
+---
+
+#### Question 2
+**Which communication pattern should you use for continuous sensor data streaming?**
+
+- A) Services
+- B) Actions
+- C) Topics
+- D) Parameters
+
+<details>
+<summary>Answer</summary>
+**C) Topics**
+
+Topics use publish/subscribe for continuous, asynchronous data streaming.
+</details>
+
+---
+
+#### Question 3
+**What does `rclpy.spin(node)` do?**
+
+- A) Rotates the robot
+- B) Keeps the node running and processes callbacks
+- C) Creates a new node
+- D) Shuts down the node
+
+<details>
+<summary>Answer</summary>
+**B) Keeps the node running and processes callbacks**
+
+`spin()` enters an event loop that processes callbacks until interrupted.
+</details>
+
+---
+
+#### Question 4
+**Which QoS reliability policy guarantees message delivery?**
+
+- A) Best Effort
+- B) Reliable
+- C) Fast
+- D) Guaranteed
+
+<details>
+<summary>Answer</summary>
+**B) Reliable**
+
+Reliable QoS retries message delivery until acknowledged.
+</details>
+
+---
+
+#### Question 5
+**What is the correct structure for a service definition file?**
+
+- A) Request only
+- B) Response only
+- C) Request --- Response
+- D) Goal --- Feedback --- Result
+
+<details>
+<summary>Answer</summary>
+**C) Request --- Response**
+
+Services have request above the line and response below.
+</details>
+
+---
+
+#### Question 6
+**True or False: A service client can call multiple servers with the same service name.**
+
+<details>
+<summary>Answer</summary>
+**False**
+
+Each service name can only have ONE server. Multiple servers would create ambiguity.
+</details>
+
+---
+
+#### Question 7
+**Which communication pattern supports cancellation of ongoing tasks?**
+
+- A) Topics
+- B) Services
+- C) Actions
+- D) Parameters
+
+<details>
+<summary>Answer</summary>
+**C) Actions**
+
+Actions support goal cancellation (preemption) during execution.
+</details>
+
+---
+
+#### Question 8
+**What are the three message types in an action?**
+
+- A) Request, Response, Error
+- B) Goal, Feedback, Result
+- C) Start, Update, End
+- D) Command, Status, Output
+
+<details>
+<summary>Answer</summary>
+**B) Goal, Feedback, Result**
+
+Actions have Goal (what to achieve), Feedback (progress), and Result (outcome).
+</details>
+
+---
+
+#### Question 9
+**Why must parameters be declared in ROS 2?**
+
+- A) Required by law
+- B) For type safety and default values
+- C) To use less memory
+- D) For backwards compatibility
+
+<details>
+<summary>Answer</summary>
+**B) For type safety and default values**
+
+Declaration provides type checking and ensures parameters have defined defaults.
+</details>
+
+---
+
+#### Question 10
+**How do you override a parameter from the command line?**
+
+- A) `--param max_speed=1.0`
+- B) `-p max_speed:=1.0`
+- C) `--set max_speed 1.0`
+- D) `-param=max_speed:1.0`
+
+<details>
+<summary>Answer</summary>
+**B) `-p max_speed:=1.0`**
+
+ROS 2 uses `--ros-args -p parameter:=value` syntax.
+</details>
+
+---
+
+#### Question 11
+**What function must a Python launch file define?**
+
+- A) `main()`
+- B) `launch()`
+- C) `generate_launch_description()`
+- D) `create_nodes()`
+
+<details>
+<summary>Answer</summary>
+**C) `generate_launch_description()`**
+
+This function returns a `LaunchDescription` object with nodes to launch.
+</details>
+
+---
+
+#### Question 12
+**What does topic remapping accomplish?**
+
+- A) Changes node code
+- B) Changes topic names without code modification
+- C) Improves performance
+- D) Encrypts messages
+
+<details>
+<summary>Answer</summary>
+**B) Changes topic names without code modification**
+
+Remapping connects nodes with different topic naming conventions.
+</details>
+
+---
+
+#### Question 13
+**Which executor should you use for nodes with blocking callbacks?**
+
+- A) SingleThreadedExecutor
+- B) MultiThreadedExecutor
+- C) StaticExecutor
+- D) BlockingExecutor
+
+<details>
+<summary>Answer</summary>
+**B) MultiThreadedExecutor**
+
+Allows callbacks to run in parallel, preventing blocking.
+</details>
+
+---
+
+#### Question 14
+**What is the purpose of a namespace in ROS 2?**
+
+- A) Organize code into folders
+- B) Group all node topics/services under a common prefix
+- C) Encrypt communications
+- D) Improve performance
+
+<details>
+<summary>Answer</summary>
+**B) Group all node topics/services under a common prefix**
+
+Namespaces prevent topic conflicts when running multiple robots.
+</details>
+
+---
+
+#### Question 15
+**Which logging level should you use for a serious but recoverable problem?**
+
+- A) DEBUG
+- B) INFO
+- C) WARN
+- D) ERROR
+
+<details>
+<summary>Answer</summary>
+**C) WARN**
+
+WARN indicates unexpected but non-critical issues.
+</details>
+
+---
+
+#### Question 16
+**What command shows the publishing rate of a topic?**
+
+- A) `ros2 topic rate`
+- B) `ros2 topic hz`
+- C) `ros2 topic speed`
+- D) `ros2 topic freq`
+
+<details>
+<summary>Answer</summary>
+**B) `ros2 topic hz`**
+
+`hz` measures frequency (messages per second).
+</details>
+
+---
+
+#### Question 17
+**True or False: Composable nodes run in the same process for better performance.**
+
+<details>
+<summary>Answer</summary>
+**True**
+
+Composable nodes enable zero-copy messaging and lower latency.
+</details>
+
+---
+
+#### Question 18
+**What is the main advantage of using YAML parameter files?**
+
+- A) Faster execution
+- B) Smaller file size
+- C) Easy to share and version control configurations
+- D) More secure
+
+<details>
+<summary>Answer</summary>
+**C) Easy to share and version control configurations**
+
+YAML files make configurations portable and versionable.
+</details>
+
+---
+
+#### Question 19
+**Which state indicates an action goal has completed successfully?**
+
+- A) ACCEPTED
+- B) EXECUTING
+- C) SUCCEEDED
+- D) FINISHED
+
+<details>
+<summary>Answer</summary>
+**C) SUCCEEDED**
+
+SUCCEEDED is the terminal state for successful completion.
+</details>
+
+---
+
+#### Question 20
+**What happens if a subscriber's callback function blocks for a long time?**
+
+- A) Nothing, it's fine
+- B) Messages queue up and may be dropped
+- C) Publisher stops publishing
+- D) ROS 2 crashes
+
+<details>
+<summary>Answer</summary>
+**B) Messages queue up and may be dropped**
+
+Slow callbacks cause message queuing and eventual dropping.
+</details>
+
+---
+
+### Section B: Short Answer (10 questions × 2 points = 20 points)
+
+#### Question 21
+**Explain the difference between topics and services. When would you use each? (4-6 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+Topics use publish/subscribe for continuous, asynchronous data streaming where publishers don't wait for responses. They're ideal for sensor data like camera feeds or lidar scans. Services use request/response for on-demand operations where the client needs an immediate result, like computing inverse kinematics or querying system state. Services are synchronous (client waits), while topics are asynchronous. Use topics for continuous data, services for one-time queries or commands.
+</details>
+
+---
+
+#### Question 22
+**What is Quality of Service (QoS) and why is it important in ROS 2? Provide one example. (3-4 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+QoS policies control message delivery characteristics like reliability, durability, and history. They're critical for ensuring robot systems behave correctly under different network conditions. For example, robot velocity commands should use Reliable QoS to ensure no commands are lost (safety-critical), while high-frequency sensor data can use Best Effort QoS since occasional missed frames are acceptable.
+</details>
+
+---
+
+#### Question 23
+**Describe the node lifecycle states and when you would use managed nodes. (3-4 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+Managed nodes transition through Unconfigured → Inactive → Active states, providing structured startup/shutdown. Unconfigured means resources allocated but not configured, Inactive means configured but not processing, and Active means fully operational. Use managed nodes for production systems requiring coordinated startup sequences, like sensor calibration before data capture, or safety-critical systems needing explicit activation.
+</details>
+
+---
+
+#### Question 24
+**What is the purpose of parameter callbacks? Provide a use case. (3-4 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+Parameter callbacks are called when parameters are updated at runtime, allowing nodes to react to configuration changes without restarting. They enable validation of new parameter values before applying them, returning success/failure. Example use case: a robot controller with a max_speed parameter can validate that new speed values are within safe limits (0-3 m/s) and reject invalid values, preventing dangerous configurations.
+</details>
+
+---
+
+#### Question 25
+**Explain how topic remapping helps when running multiple robots. (2-3 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+Topic remapping changes topic names without modifying code, preventing conflicts when running multiple robot instances. For example, two robots can both publish to `/cmd_vel` internally, but remapping changes them to `/robot1/cmd_vel` and `/robot2/cmd_vel` at launch time. This allows reusable code across different robot configurations.
+</details>
+
+---
+
+#### Question 26
+**What is an action server's execute callback responsible for? List 3 key responsibilities.**
+
+<details>
+<summary>Sample Answer</summary>
+1. Execute the goal's task (e.g., navigate to waypoint)
+2. Publish feedback periodically to update client on progress
+3. Check for cancellation requests and handle gracefully
+4. Set final result and mark goal as succeeded/aborted/canceled
+</details>
+
+---
+
+#### Question 27
+**Why would you use a MultiThreadedExecutor instead of SingleThreadedExecutor?**
+
+<details>
+<summary>Sample Answer</summary>
+Use MultiThreadedExecutor when you have callbacks that perform blocking operations (e.g., heavy computation, waiting for sensor data). It prevents one slow callback from blocking other callbacks by running them in parallel on different threads. This maintains responsiveness in nodes with mixed fast/slow callbacks.
+</details>
+
+---
+
+#### Question 28
+**List 4 benefits of using launch files instead of manually starting nodes.**
+
+<details>
+<summary>Sample Answer</summary>
+1. Reproducible configuration - same setup every time
+2. Single command to start entire system
+3. Easier to share and version control
+4. Coordinated shutdown - all nodes stop together
+5. Parameters and remapping configured in one place
+</details>
+
+---
+
+#### Question 29
+**What command would you use to save all current parameter values of a node to a file?**
+
+<details>
+<summary>Sample Answer</summary>
+`ros2 param dump /node_name > params.yaml`
+
+This captures the current state of all parameters for backup or sharing.
+</details>
+
+---
+
+#### Question 30
+**Explain the difference between Reliable and Best Effort QoS. Give one use case for each.**
+
+<details>
+<summary>Sample Answer</summary>
+Reliable QoS guarantees message delivery through retries and acknowledgments, while Best Effort may lose messages but has lower overhead. Use Reliable for robot commands (e.g., emergency stop) where lost messages are dangerous. Use Best Effort for high-frequency sensor data (e.g., 30Hz camera) where missing occasional frames is acceptable.
+</details>
+
+---
+
+## Part 2: Hands-On Project (60 points)
+
+### Project: Autonomous Delivery Robot System
+
+Build a complete multi-node system simulating an autonomous delivery robot.
+
+**Time**: 60 minutes
+
+---
+
+### System Requirements
+
+#### 1. Package Setup (5 points)
+
+Create ROS 2 package structure:
+```
+delivery_robot/
+├── delivery_robot/
+│   ├── battery_monitor.py
+│   ├── navigation_controller.py
+│   ├── delivery_manager.py
+│   └── emergency_stop.py
+├── config/
+│   └── robot_params.yaml
+├── launch/
+│   └── delivery_system_launch.py
+├── package.xml
+└── setup.py
+```
+
+---
+
+#### 2. Battery Monitor Node (10 points)
+
+**File**: `battery_monitor.py`
+
+**Requirements**:
+- Publish battery level to `/battery/level` (Float32)
+- Start at 100%, decrease by 0.5% every second
+- Parameters:
+  - `initial_charge`: 100.0
+  - `drain_rate`: 0.5 (% per second)
+- Log WARN when &lt;20%, ERROR when &lt;10%
+- Publish at 1 Hz
+
+**Evaluation**:
+- [2 pts] Correct topic and message type
+- [2 pts] Parameters implemented
+- [2 pts] Battery decreases correctly
+- [2 pts] Logging levels correct
+- [2 pts] Clean code and comments
+
+---
+
+#### 3. Navigation Controller Node (15 points)
+
+**File**: `navigation_controller.py`
+
+**Requirements**:
+- Subscribe to `/battery/level`
+- Publish velocity commands to `/cmd_vel` (Twist)
+- Parameters:
+  - `max_speed`: 1.0 (m/s)
+  - `low_battery_threshold`: 20.0 (%)
+- Behavior:
+  - Normal operation: publish forward velocity (linear.x = max_speed)
+  - Low battery (&lt;threshold): reduce speed to 50%
+  - Critical battery (&lt;10%): stop (linear.x = 0)
+- Publish at 10 Hz
+
+**Evaluation**:
+- [3 pts] Subscription and callback correct
+- [3 pts] Publishing velocity commands
+- [3 pts] Parameters implemented
+- [3 pts] Battery-based speed logic correct
+- [3 pts] Clean code and error handling
+
+---
+
+#### 4. Delivery Manager Action Server (15 points)
+
+**File**: `delivery_manager.py`
+
+**Requirements**:
+- Action server: `/deliver_package`
+- Use `Fibonacci` action (for simplicity) or create custom
+- Goal: Delivery location ID (integer)
+- Feedback: Distance remaining, percent complete
+- Result: Success status
+- Behavior:
+  - Simulate 10-second delivery
+  - Send feedback every second (90%, 80%, ... 0%)
+  - Support cancellation
+  - Check battery level before accepting goal (reject if &lt;15%)
+
+**Evaluation**:
+- [3 pts] Action server created correctly
+- [3 pts] Feedback published periodically
+- [3 pts] Cancellation handling
+- [3 pts] Battery check before acceptance
+- [3 pts] Result returned correctly
+
+---
+
+#### 5. Emergency Stop Service (5 points)
+
+**File**: `emergency_stop.py`
+
+**Requirements**:
+- Service: `/emergency_stop` (Trigger)
+- When called:
+  - Log "EMERGENCY STOP ACTIVATED"
+  - Publish zero velocity to `/cmd_vel`
+  - Return success: True, message: "Robot stopped"
+
+**Evaluation**:
+- [2 pts] Service created correctly
+- [2 pts] Publishes stop command
+- [1 pt] Correct response message
+
+---
+
+#### 6. Launch File (10 points)
+
+**File**: `delivery_system_launch.py`
+
+**Requirements**:
+- Start all 4 nodes
+- Load parameters from `robot_params.yaml`
+- Use namespace `/delivery_robot`
+- Launch arguments:
+  - `robot_id` (default: "robot_1")
+  - `initial_battery` (default: "100.0")
+- Pass arguments to nodes as parameters
+
+**Evaluation**:
+- [3 pts] All nodes started
+- [2 pts] Parameters loaded from YAML
+- [2 pts] Namespace applied
+- [3 pts] Launch arguments work
+
+---
+
+#### 7. Parameter File (5 points)
+
+**File**: `config/robot_params.yaml`
+
+**Requirements**:
+```yaml
+battery_monitor:
+  ros__parameters:
+    initial_charge: 100.0
+    drain_rate: 0.5
+
+navigation_controller:
+  ros__parameters:
+    max_speed: 1.0
+    low_battery_threshold: 20.0
+
+delivery_manager:
+  ros__parameters:
+    delivery_timeout: 10.0
+    min_battery_for_delivery: 15.0
+```
+
+**Evaluation**:
+- [3 pts] Correct YAML structure
+- [2 pts] All parameters defined
+
+---
+
+### Testing and Validation
+
+**Test Sequence**:
+
+```bash
+# Terminal 1: Launch system
+ros2 launch delivery_robot delivery_system_launch.py
+
+# Terminal 2: Verify nodes
+ros2 node list  # Should see all 4 nodes
+
+# Terminal 3: Check battery
+ros2 topic echo /delivery_robot/battery/level
+
+# Terminal 4: Monitor velocity
+ros2 topic echo /delivery_robot/cmd_vel
+
+# Terminal 5: Send delivery goal
+ros2 action send_goal /delivery_robot/deliver_package \
+    example_interfaces/action/Fibonacci "{order: 5}"
+
+# Terminal 6: Test emergency stop
+ros2 service call /delivery_robot/emergency_stop std_srvs/srv/Trigger
+
+# Terminal 7: Test with different battery
+ros2 launch delivery_robot delivery_system_launch.py initial_battery:=15.0
+```
+
+**Expected Behavior**:
+1. Battery decreases from 100% to 0% over 200 seconds
+2. Speed reduces at 20% battery
+3. Robot stops at 10% battery
+4. Delivery action completes in 10 seconds with feedback
+5. Delivery rejected if battery &lt;15%
+6. Emergency stop immediately zeroes velocity
+
+---
+
+### Submission Requirements
+
+Submit:
+1. All Python source files (.py)
+2. Launch file (.py)
+3. Parameter file (.yaml)
+4. README.md with:
+   - How to run the system
+   - Testing procedure
+   - Any assumptions made
+
+---
+
+### Grading Rubric
+
+| Component | Points | Criteria |
+|-----------|--------|----------|
+| **Package Setup** | 5 | Correct structure, setup.py, package.xml |
+| **Battery Monitor** | 10 | Topic, parameters, logic, logging |
+| **Navigation Controller** | 15 | Subscription, publishing, battery logic |
+| **Delivery Manager** | 15 | Action server, feedback, cancellation |
+| **Emergency Stop** | 5 | Service, stop command |
+| **Launch File** | 10 | All nodes, parameters, arguments |
+| **Parameter File** | 5 | YAML structure, completeness |
+| **Code Quality** | 10 | Comments, style, error handling |
+| **Testing** | 10 | System works as expected |
+| **Documentation** | 5 | README clarity |
+| **TOTAL** | **100** | (scaled to 60 points) |
+
+---
+
+## Assessment Completion
+
+### Self-Assessment Checklist
+
+Before submitting, verify:
+
+- ✅ All 4 nodes created and functional
+- ✅ Topics publish/subscribe correctly
+- ✅ Action server handles goals, feedback, cancellation
+- ✅ Service responds correctly
+- ✅ Parameters loaded from YAML
+- ✅ Launch file starts entire system
+- ✅ System behavior matches requirements
+- ✅ Code is well-commented
+- ✅ Testing instructions provided
+
+---
+
+## What's Next?
+
+Congratulations on completing Module 1! 🎉
+
+You've mastered:
+- ✅ ROS 2 Nodes and Communication
+- ✅ Topics (Publish/Subscribe)
+- ✅ Services (Request/Response)
+- ✅ Actions (Long-Running Tasks)
+- ✅ Parameters (Runtime Configuration)
+- ✅ Launch Files (System Integration)
+
+**Next Module**: [Module 2: Digital Twin Simulation →](/docs/module-2-simulation/week-5/chapter-9-intro-gazebo)
+
+Learn to create virtual replicas of robots using Gazebo and Unity!
+
+---
+
+**Module 1 Progress**: 8/8 chapters complete ✅ | [Return to Module 1](/docs/module-1-ros2/week-1/chapter-1-intro)

@@ -1,0 +1,441 @@
+---
+title: "Module 3 Assessment: NVIDIA Isaac Platform Mastery"
+description: "Comprehensive assessment covering Isaac Sim, synthetic data generation, Isaac Gym RL training, behavior trees, and deployment to real robots"
+sidebar_position: 9
+---
+
+# Module 3 Assessment: NVIDIA Isaac Platform
+
+## Overview
+
+This assessment evaluates your understanding and practical skills across all four weeks of Module 3:
+- **Week 8**: Isaac Sim fundamentals and ROS 2 integration
+- **Week 9**: Synthetic data generation and perception training
+- **Week 10**: Isaac Gym and reinforcement learning
+- **Week 11**: Behavior trees and deployment
+
+**Assessment Structure**:
+
+1. **Multiple Choice Quiz** (20 questions, 40% of grade)
+2. **Hands-On Project** (1 capstone project, 60% of grade)
+
+**Passing Grade**: 70% overall
+**Time Limit**: 4 hours for hands-on project (quiz untimed)
+
+---
+
+## Part 1: Multiple Choice Quiz (40 points)
+
+### Isaac Sim Fundamentals (Chapters 15-16)
+
+**1. What is the minimum GPU requirement for running Isaac Sim?**
+- a) GTX 1060
+- b) RTX 2070
+- c) RTX 4090
+- d) Integrated GPU
+
+**2. Which data format does Isaac Sim use for 3D scenes?**
+- a) URDF
+- b) SDF
+- c) USD (Universal Scene Description)
+- d) OBJ
+
+**3. How do you enable the ROS 2 Bridge in Isaac Sim via Python?**
+- a) `import ros2`
+- b) `enable_extension("omni.isaac.ros2_bridge")`
+- c) `ros2 bridge enable`
+- d) `gym.load_ros2()`
+
+**4. What is the typical latency for camera data publishing from Isaac Sim to ROS 2?**
+- a) &lt;1 ms
+- b) 5-10 ms
+- c) 50-100 ms
+- d) &gt;500 ms
+
+### Synthetic Data Generation (Chapters 17-18)
+
+**5. What is the main purpose of domain randomization?**
+- a) Make training faster
+- b) Improve sim-to-real transfer by exposing models to diverse conditions
+- c) Reduce dataset size
+- d) Increase GPU usage
+
+**6. Which annotation format does Isaac Sim Replicator NOT support natively?**
+- a) Bounding boxes (2D)
+- b) Instance segmentation
+- c) Point clouds
+- d) Audio spectrograms
+
+**7. What is a typical training time for YOLOv8 on 10,000 synthetic images?**
+- a) 5 minutes
+- b) 30-60 minutes
+- c) 5 hours
+- d) 24 hours
+
+**8. What does mAP50 measure in object detection?**
+- a) Model size
+- b) Average precision at 50% IoU threshold
+- c) Training speed
+- d) GPU memory usage
+
+### Isaac Gym and RL (Chapters 19-20)
+
+**9. What is the primary advantage of Isaac Gym over CPU-based simulators?**
+- a) Better graphics
+- b) GPU-accelerated parallel physics (1000x speedup)
+- c) Easier API
+- d) More robot models
+
+**10. How many parallel environments can Isaac Gym typically run on a single GPU?**
+- a) 1-10
+- b) 50-100
+- c) 500-1000
+- d) 1000-4096+
+
+**11. What does PPO stand for in reinforcement learning?**
+- a) Parallel Policy Optimization
+- b) Proximal Policy Optimization
+- c) Predictive Policy Optimization
+- d) Progressive Policy Optimization
+
+**12. What is a typical training time for humanoid walking in Isaac Gym?**
+- a) 1-2 minutes
+- b) 15-30 minutes
+- c) 5-10 hours
+- d) 2-3 days
+
+**13. Why include an "energy penalty" in the humanoid reward function?**
+- a) To make training faster
+- b) To encourage energy-efficient, smooth gaits
+- c) To reduce GPU usage
+- d) It's required by PPO
+
+### Behavior Trees and Deployment (Chapters 21-22)
+
+**14. What is the key advantage of behavior trees over finite state machines?**
+- a) Faster execution
+- b) Modularity and reusability of subtrees
+- c) Lower memory usage
+- d) Better graphics
+
+**15. What are the three possible return statuses for a behavior tree Action node?**
+- a) TRUE, FALSE, UNKNOWN
+- b) SUCCESS, FAILURE, RUNNING
+- c) PASS, FAIL, WAIT
+- d) 0, 1, -1
+
+**16. What does a Sequence node do in a behavior tree?**
+- a) Executes children in random order
+- b) Executes children left-to-right until one fails
+- c) Executes only the first child
+- d) Executes all children in parallel
+
+**17. Why export PyTorch models to ONNX for deployment?**
+- a) ONNX has better accuracy
+- b) Framework-agnostic format compatible with TensorRT and edge devices
+- c) Required by ROS 2
+- d) Reduces training time
+
+**18. What is TensorRT's main purpose?**
+- a) Train models faster
+- b) GPU-accelerated inference with optimizations (4-10x speedup)
+- c) Visualize neural networks
+- d) Manage datasets
+
+**19. What is a typical sim-to-real performance gap without fine-tuning?**
+- a) 0-5%
+- b) 10-30%
+- c) 50-70%
+- d) >90%
+
+**20. How can you reduce the sim-to-real gap?**
+- a) Use smaller models
+- b) Train for fewer epochs
+- c) Domain randomization and fine-tuning on real data
+- d) Increase learning rate
+
+---
+
+### Quiz Answers
+
+<details>
+<summary>**Show Answers and Explanations**</summary>
+
+1. **b)** RTX 2070 (minimum 8GB VRAM; RTX 3080+ recommended)
+2. **c)** USD (Pixar's Universal Scene Description format)
+3. **b)** `enable_extension("omni.isaac.ros2_bridge")`
+4. **b)** 5-10 ms (low latency, suitable for real-time control)
+5. **b)** Improve sim-to-real transfer by exposing models to diverse conditions
+6. **d)** Audio spectrograms (Replicator focuses on vision data)
+7. **b)** 30-60 minutes (50 epochs on modern GPU)
+8. **b)** Average precision at 50% IoU threshold (standard detection metric)
+9. **b)** GPU-accelerated parallel physics (1000x faster than MuJoCo/PyBullet)
+10. **d)** 1000-4096+ environments (scales with GPU VRAM)
+11. **b)** Proximal Policy Optimization (de facto RL standard)
+12. **b)** 15-30 minutes (vs days on CPU simulators)
+13. **b)** Encourage energy-efficient, smooth gaits (minimize jerky motion)
+14. **b)** Modularity and reusability of subtrees (easier maintenance)
+15. **b)** SUCCESS, FAILURE, RUNNING (indicates ongoing execution)
+16. **b)** Executes children left-to-right until one fails (AND logic)
+17. **b)** Framework-agnostic format compatible with TensorRT and edge devices
+18. **b)** GPU-accelerated inference with optimizations (layer fusion, precision tuning)
+19. **b)** 10-30% (varies by task and randomization quality)
+20. **c)** Domain randomization during training + fine-tuning on real data
+
+</details>
+
+---
+
+## Part 2: Hands-On Capstone Project (60 points)
+
+### Project: End-to-End Isaac Sim Robot Intelligence Pipeline
+
+**Objective**: Build a complete robot AI system that:
+1. Generates synthetic training data
+2. Trains a perception model (object detection)
+3. Trains an RL policy (object retrieval)
+4. Integrates both with a behavior tree
+5. Deploys to a ROS 2-controlled simulated robot
+
+**Scenario**: A humanoid robot must navigate to a table, detect a specific object (mug), grasp it, and deliver it to a target location.
+
+---
+
+### Task Breakdown
+
+#### Task 1: Synthetic Data Generation (10 points)
+
+**Requirements**:
+- Use Isaac Sim Replicator to generate 500 images of mugs on tables
+- Apply domain randomization:
+  - Random object poses (position, rotation, scale)
+  - Random lighting (intensity, color temperature)
+  - Random textures (at least 3 different mug materials)
+- Export annotations: RGB images + 2D bounding boxes (COCO format)
+
+**Deliverables**:
+- Python script: `generate_dataset.py`
+- Output folder: `./mug_dataset/` with 500 images + annotations
+- README: Explain randomization parameters
+
+**Evaluation Criteria**:
+- [ ] 500 images generated successfully (2 pts)
+- [ ] Bounding box annotations accurate (>90% IoU) (3 pts)
+- [ ] Visible randomization diversity (lighting, poses, textures) (3 pts)
+- [ ] COCO JSON format valid (2 pts)
+
+---
+
+#### Task 2: Perception Model Training (15 points)
+
+**Requirements**:
+- Train YOLOv8 nano model on synthetic mug dataset
+- Achieve >80% mAP50 on validation set (20% split)
+- Export trained model to ONNX format
+- Test inference speed: must achieve >10 FPS on GPU
+
+**Deliverables**:
+- Training script: `train_yolo.py`
+- Trained model: `mug_detector.onnx`
+- Evaluation report: `results.txt` (mAP, precision, recall, FPS)
+
+**Evaluation Criteria**:
+- [ ] Training completes without errors (3 pts)
+- [ ] mAP50 > 0.80 on validation set (5 pts)
+- [ ] ONNX export successful and inference works (4 pts)
+- [ ] Inference speed >10 FPS (3 pts)
+
+---
+
+#### Task 3: RL Policy Training (Navigation) (15 points)
+
+**Requirements**:
+- Train a navigation policy in Isaac Gym
+- Robot must reach target waypoints within 2 meters radius
+- Train with 2048 parallel environments for 500 epochs
+- Curriculum: Start with close waypoints (1m), increase to 5m
+
+**Deliverables**:
+- Training script: `train_navigation.py`
+- Trained policy: `navigation_policy.pth`
+- Training curves: TensorBoard logs in `runs/navigation/`
+- Video: 30-second clip of trained policy navigating (5 random waypoints)
+
+**Evaluation Criteria**:
+- [ ] Training runs without GPU memory errors (3 pts)
+- [ ] Policy successfully reaches waypoint >80% of time (5 pts)
+- [ ] Smooth navigation (no excessive spinning or falling) (4 pts)
+- [ ] TensorBoard shows clear learning progress (3 pts)
+
+---
+
+#### Task 4: Behavior Tree Integration (10 points)
+
+**Requirements**:
+- Create a behavior tree using Isaac Cortex:
+  ```
+  Sequence:
+    1. Navigate to table (RL policy)
+    2. Detect mug (YOLO model)
+    3. Grasp mug (scripted action)
+    4. Navigate to delivery point (RL policy)
+    5. Release mug
+  ```
+- Handle failures: If detection fails, retry 3 times before aborting
+- If navigation fails (stuck for >10 seconds), request new waypoint
+
+**Deliverables**:
+- Behavior tree implementation: `behavior_tree.py`
+- Visualization: PNG diagram of tree structure
+- Success log: `bt_execution.log` showing node status per tick
+
+**Evaluation Criteria**:
+- [ ] Tree executes all 5 steps in sequence (4 pts)
+- [ ] Retry logic works for detection failures (2 pts)
+- [ ] Navigation timeout handling implemented (2 pts)
+- [ ] Tree visualization clear and accurate (2 pts)
+
+---
+
+#### Task 5: ROS 2 Deployment (10 points)
+
+**Requirements**:
+- Create ROS 2 nodes:
+  - `mug_detector_node`: Subscribes to `/camera/image_raw`, publishes `/detections`
+  - `navigation_policy_node`: Subscribes to `/joint_states`, publishes `/joint_command`
+  - `behavior_tree_node`: Orchestrates both nodes
+- Test in Isaac Sim with ROS 2 Bridge enabled
+- Record rosbag: 60 seconds of full task execution
+
+**Deliverables**:
+- ROS 2 package: `mug_delivery_robot/`
+- Launch file: `mug_delivery.launch.py` (starts all 3 nodes)
+- Rosbag: `task_execution.bag`
+- Performance report: Latency (camera→detection), success rate
+
+**Evaluation Criteria**:
+- [ ] All 3 ROS 2 nodes launch without errors (3 pts)
+- [ ] Nodes communicate correctly (topics match, data flows) (3 pts)
+- [ ] Rosbag captures full task execution (2 pts)
+- [ ] End-to-end latency &lt;100ms (2 pts)
+
+---
+
+### Submission Guidelines
+
+**Package Structure**:
+```
+module3_capstone/
+├── task1_datagen/
+│   ├── generate_dataset.py
+│   ├── mug_dataset/ (500 images + COCO JSON)
+│   └── README.md
+├── task2_perception/
+│   ├── train_yolo.py
+│   ├── mug_detector.onnx
+│   └── results.txt
+├── task3_navigation/
+│   ├── train_navigation.py
+│   ├── navigation_policy.pth
+│   ├── runs/navigation/ (TensorBoard logs)
+│   └── navigation_demo.mp4
+├── task4_behavior_tree/
+│   ├── behavior_tree.py
+│   ├── tree_diagram.png
+│   └── bt_execution.log
+├── task5_ros2/
+│   ├── mug_delivery_robot/ (ROS 2 package)
+│   ├── task_execution.bag
+│   └── performance_report.md
+└── README.md (overall project summary)
+```
+
+**Submission**:
+- Compress to `module3_capstone_<yourname>.zip`
+- Upload to course platform
+- Include README.md with:
+  - Setup instructions
+  - Dependencies (Isaac Sim version, ROS 2 Humble, etc.)
+  - How to run each task
+  - Known issues/limitations
+
+---
+
+### Grading Rubric
+
+| Component | Points | Criteria |
+|-----------|--------|----------|
+| **Quiz** | 40 | 2 points per question (20 questions) |
+| **Task 1: Data Generation** | 10 | Completeness, diversity, format validity |
+| **Task 2: Perception Training** | 15 | Accuracy (mAP), export success, speed |
+| **Task 3: RL Navigation** | 15 | Success rate, smoothness, learning progress |
+| **Task 4: Behavior Tree** | 10 | Correctness, error handling, visualization |
+| **Task 5: ROS 2 Integration** | 10 | Node functionality, latency, rosbag quality |
+| **TOTAL** | **100** | **Pass: 70+** |
+
+---
+
+## Bonus Challenges (+20 Extra Credit)
+
+### Bonus 1: Sim-to-Real Transfer (+10 points)
+- Fine-tune perception model on 50 real mug images
+- Report mAP improvement: synthetic-only vs fine-tuned
+- Document domain gap analysis (lighting, textures, backgrounds)
+
+### Bonus 2: Multi-Object Generalization (+10 points)
+- Extend system to detect and retrieve 3 object types (mug, bottle, can)
+- Train multi-class YOLO model
+- Modify behavior tree to accept object type as parameter
+
+---
+
+## Resources
+
+### Reference Code
+- Isaac Sim Examples: `~/.local/share/ov/pkg/isaac_sim-2023.1.1/standalone_examples/`
+- rl_games Tutorials: [GitHub](https://github.com/Denys88/rl_games)
+- YOLOv8 Docs: [Ultralytics](https://docs.ultralytics.com/)
+
+### Documentation
+- [Isaac Sim Documentation](https://docs.omniverse.nvidia.com/isaacsim/latest/index.html)
+- [Isaac Gym Paper](https://arxiv.org/abs/2108.10470)
+- [ROS 2 Humble Docs](https://docs.ros.org/en/humble/index.html)
+
+### Office Hours
+- Discord: #module3-isaac-help
+- Live Sessions: Thursdays 6-8 PM UTC
+
+---
+
+## Reflection Questions (Optional, Ungraded)
+
+After completing the assessment, consider:
+
+1. **Sim-to-Real Gap**: What were the biggest differences you expect between your simulated system and a real robot? How would you address them?
+
+2. **Scalability**: How would you scale this system to handle 10 different object types? 100 types?
+
+3. **Safety**: What safety mechanisms would you add before deploying this on a real humanoid robot in a home environment?
+
+4. **Failure Modes**: What are 3 ways your system could fail catastrophically? How would you detect and recover from each?
+
+5. **Next Steps**: If you had another week on this project, what would you improve first?
+
+---
+
+## Congratulations! 🎉
+
+Upon completing this assessment with a passing grade, you will have demonstrated:
+
+✅ Mastery of **Isaac Sim** for photorealistic robot simulation
+✅ Ability to generate **synthetic datasets** at scale
+✅ Skills in training **perception models** (YOLO) on synthetic data
+✅ Expertise in **reinforcement learning** with Isaac Gym
+✅ Understanding of **behavior trees** for task planning
+✅ Capability to **deploy AI models** to ROS 2 robot systems
+
+**You're now ready for Module 4: Vision-Language-Action (VLA) Robotics!**
+
+---
+
+**Next**: [Module 4: Vision-Language-Action Robotics](/docs/module-4-vla/week-12/chapter-23-intro-vla)

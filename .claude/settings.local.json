@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.specify/scripts/powershell/create-new-feature.ps1 -Json -Number 1 -ShortName \"physical-ai-textbook\" -Description \"# Specification: Physical AI Textbook Content Generation\n\n## Overview\n\nThe objective is to create the complete, structured content for a technical textbook on \"\"Physical AI & Humanoid Robotics\"\". The content must be written in Markdown format and structured for publication using the Docusaurus framework.\n\n## Scope\n\nThe generated content must cover the full curriculum, organized into chapters corresponding to the following Modules and Weeks:\n\n* **Module 1: The Robotic Nervous System (ROS 2)**\n    * Weeks 3-5: ROS 2 Fundamentals\n* **Module 2: Simulation to Reality (Sim-to-Real)**\n    * Weeks 6-7: Robot Simulation with Gazebo\n    * Weeks 8-9: Sim-to-Real Deployment & Isaac Sim\n* **Module 3: Embodied Intelligence (LLM to Robot)**\n* **Module 4: Capstone Project: Humanoid Agent**\n    * Weeks 10-14: Capstone Project: Humanoid Agent\n\n## Requirements\n\n1.  **Technical Focus**: The content must be technical, aimed at students taking a capstone course.\n2.  **Format**: All content must be in Markdown (.md) files, correctly structured for Docusaurus (including frontmatter like \\`sidebar_position\\`, \\`title\\`, etc.).\n3.  **Depth**: Each week should contain sufficient material (approx. 2000-3000 words per week of detaile\")"
+    ]
+  }
+}

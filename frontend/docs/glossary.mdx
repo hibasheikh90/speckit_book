@@ -1,0 +1,409 @@
+---
+id: glossary
+title: Glossary
+sidebar_position: 98
+description: Technical terms and definitions for Physical AI, Humanoid Robotics, ROS 2, Isaac Sim, and VLA models
+keywords: [glossary, definitions, terms, robotics, ros2, isaac, vla]
+---
+
+# Glossary
+
+Technical terms used throughout this textbook, organized alphabetically.
+
+---
+
+## A
+
+**Action (ROS 2)**
+A communication pattern for long-running, preemptable tasks that provide feedback during execution. Consists of goal, feedback, and result messages.
+
+**Actuator**
+A mechanical component that causes movement (e.g., motors, hydraulic cylinders, servos).
+
+**AI-Native**
+An approach that integrates artificial intelligence techniques from the foundational level, rather than adding AI as an afterthought.
+
+**Articulation Bodies (Unity)**
+Physics simulation components for connected rigid bodies with joints (used for robot models).
+
+---
+
+## B
+
+**Behavior Tree**
+A hierarchical structure for organizing robot decision-making logic, used in Isaac Cortex.
+
+**Bilingual**
+Supporting two languages (this textbook supports English and Urdu).
+
+---
+
+## C
+
+**Capstone Project**
+A comprehensive final project (Module 5) that integrates all learned concepts.
+
+**CLIP (Contrastive Language-Image Pre-training)**
+A vision-language model by OpenAI that learns visual concepts from natural language descriptions.
+
+**Colcon**
+The build tool used for ROS 2 packages (replaces catkin from ROS 1).
+
+**CUDA**
+NVIDIA's parallel computing platform and API for GPU acceleration.
+
+---
+
+## D
+
+**DDS (Data Distribution Service)**
+The middleware standard used by ROS 2 for real-time, scalable communication.
+
+**Differential Drive**
+A robot locomotion method using two independently driven wheels.
+
+**Digital Twin**
+A virtual replica of a physical system used for simulation, testing, and prediction.
+
+**DINO (Self-Distillation with No Labels)**
+A self-supervised vision transformer model for feature learning.
+
+**Docusaurus**
+The documentation framework used to build this textbook website.
+
+**Domain Randomization**
+A sim-to-real technique that varies simulation parameters to improve real-world robustness.
+
+---
+
+## E
+
+**End-Effector**
+The tool or gripper at the end of a robot arm.
+
+**Environment Variables**
+System variables (e.g., `ROS_DOMAIN_ID`) that configure software behavior.
+
+---
+
+## F
+
+**Feedback (Action)**
+Intermediate progress updates sent by an action server during execution.
+
+**Forward Kinematics**
+Computing end-effector position from joint angles.
+
+**Frontmatter**
+Metadata at the top of MDX files (e.g., title, description, sidebar position).
+
+---
+
+## G
+
+**Gazebo**
+An open-source 3D robotics simulator with physics engines.
+
+**GPT-4 (Generative Pre-trained Transformer 4)**
+OpenAI's large language model used for natural language understanding and generation.
+
+---
+
+## H
+
+**Humanoid Robot**
+A robot with human-like body structure (head, torso, arms, legs).
+
+**Humble Hawksbill**
+ROS 2's LTS (Long Term Support) version released in May 2022, supported until May 2027.
+
+---
+
+## I
+
+**IMU (Inertial Measurement Unit)**
+A sensor that measures acceleration and angular velocity.
+
+**Inverse Kinematics (IK)**
+Computing joint angles needed to reach a desired end-effector position.
+
+**Isaac Cortex**
+NVIDIA's behavior tree framework for complex robot task planning.
+
+**Isaac Gym**
+NVIDIA's physics simulation environment for reinforcement learning with massive parallelization.
+
+**Isaac Sim**
+NVIDIA's photorealistic robotics simulator built on Omniverse.
+
+---
+
+## J
+
+**Joint**
+A connection point between robot links that allows relative motion (revolute, prismatic, etc.).
+
+---
+
+## K
+
+**Kinematics**
+The study of motion without considering forces (positions, velocities, accelerations).
+
+---
+
+## L
+
+**Launch File**
+A script (Python, XML, or YAML) that starts multiple ROS 2 nodes with specified parameters.
+
+**Lidar (Light Detection and Ranging)**
+A sensor that uses laser pulses to measure distances and create 3D maps.
+
+**Link**
+A rigid body component of a robot (e.g., arm segment, wheel).
+
+**Locomotion**
+Movement from one place to another (walking, rolling, flying).
+
+**LTS (Long Term Support)**
+Software versions with extended support periods (e.g., ROS 2 Humble, Ubuntu 22.04 LTS).
+
+---
+
+## M
+
+**MDX (Markdown + JSX)**
+Enhanced Markdown format that allows embedding React components.
+
+**Mecanim**
+Unity's animation system for character animation and state machines.
+
+**Mermaid.js**
+A JavaScript library for creating diagrams from text definitions.
+
+**Middleware**
+Software layer between applications and operating system (ROS 2 uses DDS middleware).
+
+---
+
+## N
+
+**Node (ROS 2)**
+An independent process that performs computation and communicates via topics, services, or actions.
+
+**Neon Postgres**
+A serverless PostgreSQL database platform.
+
+---
+
+## O
+
+**Odometry**
+Estimating robot position and orientation from sensor data (wheel encoders, IMU).
+
+**Omniverse**
+NVIDIA's platform for 3D simulation and collaboration.
+
+**ONNX (Open Neural Network Exchange)**
+A format for exporting neural network models for deployment.
+
+**OpenVLA**
+An open-source Vision-Language-Action model for robot control.
+
+---
+
+## P
+
+**PaLM-E (Pathways Language Model - Embodied)**
+Google's multimodal language model that understands vision, language, and robotic actions.
+
+**Parameter (ROS 2)**
+A configuration value that can be set at runtime (e.g., `max_speed`, `sensor_rate`).
+
+**Physical AI**
+AI systems that interact with and manipulate the physical world (robots, autonomous vehicles).
+
+**PlantUML**
+A tool for creating UML diagrams from text descriptions.
+
+**PPO (Proximal Policy Optimization)**
+A reinforcement learning algorithm used for training robot control policies.
+
+**Publisher (ROS 2)**
+A node that sends messages to a topic.
+
+---
+
+## Q
+
+**QoS (Quality of Service)**
+Settings that control message delivery reliability in ROS 2 (reliable, best-effort, etc.).
+
+**Qdrant**
+A vector database used for similarity search (e.g., RAG chatbots).
+
+**Quaternion**
+A mathematical representation of 3D rotations (more stable than Euler angles).
+
+---
+
+## R
+
+**RAG (Retrieval-Augmented Generation)**
+An AI technique that combines retrieval of relevant documents with language model generation.
+
+**RCL (ROS Client Library)**
+The client libraries for different languages (rclpy for Python, rclcpp for C++).
+
+**Reinforcement Learning (RL)**
+A machine learning approach where agents learn by trial and error with rewards.
+
+**Replicator API**
+Isaac Sim's API for synthetic data generation with domain randomization.
+
+**RGB-D**
+Image data with both color (RGB) and depth (D) information.
+
+**RL (Reinforcement Learning)**
+See Reinforcement Learning.
+
+**ROS 1 (Robot Operating System 1)**
+The original ROS version (2007-2020), now deprecated in favor of ROS 2.
+
+**ROS 2 (Robot Operating System 2)**
+The next-generation ROS with real-time capabilities, DDS middleware, and improved security.
+
+**ROS-TCP-Connector**
+Unity package for connecting Unity simulations to ROS/ROS 2.
+
+**RT-1 (Robotics Transformer 1)**
+Google's Vision-Language-Action model trained on robot demonstration data.
+
+**RT-2 (Robotics Transformer 2)**
+Improved version of RT-1 with better generalization.
+
+**RTL (Right-to-Left)**
+Text direction for languages like Urdu and Arabic.
+
+**RViz (ROS Visualization)**
+ROS 2's 3D visualization tool for sensor data, robot models, and planning.
+
+---
+
+## S
+
+**SDF (Simulation Description Format)**
+XML format for defining simulation worlds in Gazebo.
+
+**Sensor**
+A device that measures physical properties (cameras, lidar, IMU, force sensors).
+
+**Service (ROS 2)**
+A synchronous request-response communication pattern.
+
+**Sim-to-Real**
+Transferring models trained in simulation to real-world robots.
+
+**Subscriber (ROS 2)**
+A node that receives messages from a topic.
+
+**Synthetic Data**
+Computer-generated training data (images, point clouds) created in simulation.
+
+---
+
+## T
+
+**TF2 (Transform Library 2)**
+ROS 2's library for managing coordinate frame transformations.
+
+**Topic (ROS 2)**
+A named channel for asynchronous message passing (publisher-subscriber pattern).
+
+---
+
+## U
+
+**URDF (Unified Robot Description Format)**
+XML format for describing robot kinematics and dynamics.
+
+**Unity**
+A game engine used for high-fidelity robot simulation.
+
+---
+
+## V
+
+**VLA (Vision-Language-Action)**
+AI models that map visual observations and language commands to robot actions.
+
+**ViT (Vision Transformer)**
+A transformer architecture applied to image classification and feature extraction.
+
+---
+
+## W
+
+**Workspace (ROS 2)**
+A directory containing ROS 2 packages (typically `~/ros2_ws`).
+
+---
+
+## X
+
+**Xacro (XML Macros)**
+A macro language for simplifying URDF files with variables and reusable components.
+
+---
+
+## Y
+
+**YAML (YAML Ain't Markup Language)**
+A human-readable data serialization format used for ROS 2 configuration files.
+
+**YOLOv8 (You Only Look Once v8)**
+A state-of-the-art real-time object detection model.
+
+---
+
+## Z
+
+**Zero-Shot Learning**
+A model's ability to perform tasks it wasn't explicitly trained on (e.g., VLA models generalizing to new objects).
+
+---
+
+## Symbols & Acronyms
+
+- **API**: Application Programming Interface
+- **CLI**: Command-Line Interface
+- **CPU**: Central Processing Unit
+- **FPS**: Frames Per Second
+- **GPU**: Graphics Processing Unit
+- **GUI**: Graphical User Interface
+- **Hz**: Hertz (frequency unit, cycles per second)
+- **I/O**: Input/Output
+- **JSON**: JavaScript Object Notation
+- **LTS**: Long Term Support
+- **ML**: Machine Learning
+- **OS**: Operating System
+- **RAM**: Random Access Memory
+- **SDK**: Software Development Kit
+- **TCP**: Transmission Control Protocol
+- **UDP**: User Datagram Protocol
+- **UI**: User Interface
+- **VRAM**: Video Random Access Memory (GPU memory)
+- **XML**: Extensible Markup Language
+
+---
+
+## Contributing to the Glossary
+
+If you encounter a term in the textbook that isn't defined here, please:
+1. [Open an issue](https://github.com/hibasheikh/hackathon_book/issues) with the term and chapter reference
+2. Submit a pull request adding the definition
+
+---
+
+[Back to Home](/) | [View FAQ](/docs/faq) | [Browse Resources](/docs/resources)
