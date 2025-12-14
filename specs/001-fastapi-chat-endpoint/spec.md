@@ -114,10 +114,15 @@ Students and frontend developers need to understand when the AI tutor service is
 
 ### Assumptions
 
-- The AI service credentials will be provided through system configuration
+- The Gemini API key will be provided through environment configuration (GEMINI_API_KEY)
 - The Global Constitution educational principles document is available to the backend service
-- The AI service supports integration with backend services
+- The OpenAI Agent SDK will be used for agent orchestration, configured with Gemini 2.0 Flash via LiteLLM
+- The AI agent will use Gemini 2.0 Flash (gemini-2.0-flash) as the underlying language model
+- LiteLLM extension enables provider-agnostic model integration (supporting 100+ LLMs)
 - Student authentication is not required for this phase (to be added later)
 - Integration with textbook content retrieval (RAG) is out of scope for this phase
 - The backend service infrastructure is already initialized and ready for development
 - Students will primarily ask questions in English, though Unicode support is needed for names and technical terms
+- The OpenAI Agent SDK supports instructions-based agent configuration to inject educational principles
+- The OpenAI Agent SDK provides both streaming (Runner.run) and non-streaming (Runner.run_sync) capabilities
+- Context7 MCP server provides access to the latest OpenAI Agent SDK documentation
