@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  title: Educational AI Tutor Chat API
+  description: API for the chatbot integration with Docusaurus textbook
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development server
+paths:
+  /chat:
+    post:
+      summary: Send a message to the AI tutor
+      description: Sends a student question to the AI tutor and receives an educational response
+      operationId: sendMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful response from AI tutor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/StreamingResponse'
+        '400':
+          description: Bad request - invalid message format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error - message too short/long
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-code-samples:
+        - lang: curl
+          source: |
+            curl -X POST http://localhost:8000/chat \
+              -H "Content-Type: application/json" \
+              -H "Accept: text/event-stream" \
+              -d '{"message": "What is Physical AI?"}'
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the AI tutor service
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: The student's question or message
+          example: "What is Physical AI and how does it differ from traditional AI?"
+          minLength: 3
+          maxLength: 10000
+      example:
+        message: "What is Physical AI?"
+
+    ChatResponse:
+      type: object
+      required:
+        - response
+        - agent_name
+      properties:
+        response:
+          type: string
+          description: The AI tutor's response to the student's question
+          example: "Physical AI combines artificial intelligence with physical systems..."
+        agent_name:
+          type: string
+          description: Name of the agent that generated the response
+          example: "Educational Tutor"
+        timestamp:
+          type: string
+          format: date-time
+          description: When the response was generated (UTC)
+          example: "2025-12-15T10:30:00Z"
+
+    StreamingResponse:
+      type: object
+      properties:
+        content:
+          type: string
+          description: Part of the AI tutor's response (for streaming)
+          example: "Physical AI is a field that..."
+        sender:
+          type: string
+          enum: [tutor, system]
+          description: Who is sending this part of the response
+          example: "tutor"
+        timestamp:
+          type: string
+          format: date-time
+          description: When this part was generated (UTC)
+          example: "2025-12-15T10:30:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Error message explaining what went wrong
+          example: "Message must be at least 3 characters long"
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - constitution_loaded
+        - model
+        - rate_limit
+      properties:
+        status:
+          type: string
+          description: Health status of the service
+          example: "healthy"
+        constitution_loaded:
+          type: boolean
+          description: Whether the Global Constitution was loaded successfully
+          example: true
+        model:
+          type: string
+          description: Name of the AI model being used
+          example: "gemini-2.0-flash"
+        rate_limit:
+          type: string
+          description: Rate limit configuration
+          example: "10/minute"
+
+  parameters:
+    AcceptSSE:
+      name: Accept
+      in: header
+      required: false
+      description: Request streaming response format
+      schema:
+        type: string
+        enum: [text/event-stream]
+      example: text/event-stream

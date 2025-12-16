@@ -1,16 +1,17 @@
-"""Custom exception classes for the chat service."""
-
-
-class RateLimitExceeded(Exception):
-    """Raised when client exceeds rate limit."""
-    pass
+"""Custom exception classes for the AI tutor service."""
 
 
 class EmptyAIResponse(Exception):
-    """Raised when AI service returns empty or unusable response."""
-    pass
+    """Raised when the AI service returns an empty or unusable response."""
+
+    def __init__(self, message: str = "AI service returned empty response"):
+        self.message = message
+        super().__init__(self.message)
 
 
 class AIServiceError(Exception):
-    """Raised when AI service fails (network, auth, timeout)."""
-    pass
+    """Raised when the AI service encounters an error."""
+
+    def __init__(self, message: str = "AI service error occurred"):
+        self.message = message
+        super().__init__(self.message)

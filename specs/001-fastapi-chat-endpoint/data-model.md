@@ -1,4 +1,4 @@
-# Data Model: Backend Chat Communication Service
+# Data Model: Backend Chat Communication Service with OpenAIChatCompletionsModel
 
 **Feature**: Backend Chat Communication Service
 **Branch**: `001-fastapi-chat-endpoint`
@@ -7,7 +7,7 @@
 
 ## Overview
 
-This document defines the data models, entities, and state management for the FastAPI chat endpoint using OpenAI Agent SDK with Gemini 2.0 Flash. The data model supports the requirements defined in `spec.md` and architectural decisions from `research.md`.
+This document defines the data models, entities, and state management for the FastAPI chat endpoint using OpenAI Agent SDK with OpenAIChatCompletionsModel and Gemini 2.0 Flash. The data model supports the requirements defined in `spec.md` and architectural decisions from `research.md`. The migration to OpenAIChatCompletionsModel is purely an internal implementation change that maintains 100% backward compatibility in data models and API contracts.
 
 ## Core Entities
 
@@ -169,14 +169,14 @@ class ValidationError(BaseModel):
 
 ### 4. EducationalAgent
 
-**Purpose**: Represents the AI tutor agent configuration and state.
+**Purpose**: Represents the AI tutor agent configuration and state using OpenAIChatCompletionsModel.
 
 **Fields**:
 | Field | Type | Constraints | Description |
 |-------|------|-------------|-------------|
 | `name` | `str` | required | Agent identifier |
 | `instructions` | `str` | required | Educational principles and guidelines |
-| `model` | `LitellmModel` | required | LLM configuration (Gemini 2.0 Flash) |
+| `model` | `OpenAIChatCompletionsModel` | required | LLM configuration (Gemini 2.0 Flash) |
 | `tools` | `list[function_tool]` | optional | Available tools (none for MVP) |
 | `guardrails` | `list[Guardrail]` | optional | Input/output validation rules |
 
@@ -184,15 +184,15 @@ class ValidationError(BaseModel):
 - **FR-003**: Instructions must include Global Constitution principles
 - **FR-011**: Agent must be ready within 5 seconds of startup
 - Model must be configured with valid Gemini API credentials
+- **FR-014**: OpenAIChatCompletionsModel must be configured for Gemini 2.0 Flash
 
-**Implementation** (using OpenAI Agent SDK):
+**Implementation** (using OpenAI Agent SDK with OpenAIChatCompletionsModel):
 ```python
-from agents import Agent
-from agents.extensions.models.litellm_model import LitellmModel
+from agents import Agent, AsyncOpenAI, OpenAIChatCompletionsModel
 import os
 
 class EducationalAgentFactory:
-    """Factory for creating educational tutor agents"""
+    """Factory for creating educational tutor agents with OpenAIChatCompletionsModel"""
 
     @staticmethod
     def load_educational_instructions() -> str:
@@ -250,16 +250,25 @@ and practical explanations aligned with the Physical AI Textbook curriculum.
 
     @staticmethod
     def create_agent() -> Agent:
-        """Create and initialize the educational tutor agent"""
+        """Create and initialize the educational tutor agent with OpenAIChatCompletionsModel"""
         instructions = EducationalAgentFactory.load_educational_instructions()
+
+        # Create AsyncOpenAI client configured for Gemini
+        gemini_client = AsyncOpenAI(
+            api_key=os.environ.get("GEMINI_API_KEY"),
+            base_url=os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/")
+        )
+
+        # Wrap client in OpenAIChatCompletionsModel
+        model = OpenAIChatCompletionsModel(
+            model=os.environ.get("GEMINI_MODEL", "gemini-2.0-flash"),
+            openai_client=gemini_client
+        )
 
         agent = Agent(
             name="Educational Tutor",
             instructions=instructions,
-            model=LitellmModel(
-                model="gemini/gemini-2.0-flash",
-                api_key=os.environ.get("GEMINI_API_KEY")
-            )
+            model=model
         )
 
         return agent
@@ -366,7 +375,7 @@ sequenceDiagram
     FastAPI->>Validator: Validate question
     Validator-->>FastAPI: Valid (3-10000 chars)
     FastAPI->>Agent: Runner.run(agent, question)
-    Agent->>Gemini: Send prompt with instructions
+    Agent->>Gemini: Send prompt with instructions via OpenAIChatCompletionsModel
     Gemini-->>Agent: Response
     Agent-->>FastAPI: final_output
     FastAPI->>Client: TutorResponse
@@ -412,6 +421,8 @@ sequenceDiagram
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `GEMINI_API_KEY` | `str` | Yes | Google AI Studio API key |
+| `GEMINI_BASE_URL` | `str` | No | Gemini API base URL (default: "https://generativelanguage.googleapis.com/v1beta/openai/") |
+| `GEMINI_MODEL` | `str` | No | Model name (default: "gemini-2.0-flash") |
 | `CONSTITUTION_PATH` | `str` | No | Path to constitution.md (default: .specify/memory/constitution.md) |
 | `RATE_LIMIT_PER_MINUTE` | `int` | No | Requests per minute (default: 10) |
 | `REQUEST_TIMEOUT_SECONDS` | `int` | No | Max request time (default: 30) |
@@ -422,6 +433,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     gemini_api_key: str
+    gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    gemini_model: str = "gemini-2.0-flash"
     constitution_path: str = ".specify/memory/constitution.md"
     rate_limit_per_minute: int = 10
     request_timeout_seconds: int = 30
@@ -456,6 +469,124 @@ When implementing user authentication and analytics:
 
 ---
 
+## Migration Implementation Details
+
+### Internal Model Changes (Implementation Detail)
+
+#### AITutor Class
+
+**Location**: `backend/src/backend/agent.py`
+
+**Purpose**: Wrapper for AI client interaction
+
+**Before (AsyncOpenAI)**:
+```python
+from openai import AsyncOpenAI
+
+class AITutor:
+    client: AsyncOpenAI
+    model: str
+    system_prompt: str
+```
+
+**After (OpenAIChatCompletionsModel)**:
+```python
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
+
+class AITutor:
+    agent: Agent  # Wraps OpenAIChatCompletionsModel + constitution instructions
+```
+
+**Impact**: Internal only - no effect on API contracts or external interfaces
+
+---
+
+## API Contract Validation
+
+**Request Format** (unchanged):
+```json
+{
+  "question": "What is Physical AI?"
+}
+```
+
+**Success Response Format** (unchanged):
+```json
+{
+  "response": "Physical AI refers to...",
+  "agent_name": "Educational Tutor",
+  "timestamp": "2025-12-14T10:30:00Z"
+}
+```
+
+**Error Response Format** (unchanged):
+```json
+{
+  "error_type": "service",
+  "message": "AI service error: ...",
+  "field": null,
+  "timestamp": "2025-12-14T10:30:00Z"
+}
+```
+
+---
+
+## Data Flow Comparison
+
+### Before Migration (AsyncOpenAI)
+
+```
+StudentQuestion (Pydantic)
+    ↓
+validate question (3-10000 chars)
+    ↓
+AITutor.generate_response(message: str)
+    ↓
+AsyncOpenAI.chat.completions.create(
+    model="gemini-2.0-flash",
+    messages=[
+        {"role": "system", "content": constitution},
+        {"role": "user", "content": message}
+    ]
+)
+    ↓
+response.choices[0].message.content
+    ↓
+TutorResponse(response=content)
+```
+
+### After Migration (OpenAIChatCompletionsModel)
+
+```
+StudentQuestion (Pydantic)  [UNCHANGED]
+    ↓
+validate question (3-10000 chars)  [UNCHANGED]
+    ↓
+AITutor.generate_response(message: str)  [UNCHANGED SIGNATURE]
+    ↓
+Runner.run(
+    starting_agent=Agent(
+        instructions=constitution,
+        model=OpenAIChatCompletionsModel(
+            model="gemini-2.0-flash",
+            openai_client=AsyncOpenAI(
+                api_key=GEMINI_API_KEY,
+                base_url=GEMINI_BASE_URL
+            )
+        )
+    ),
+    input=message
+)
+    ↓
+result.final_output
+    ↓
+TutorResponse(response=content)  [UNCHANGED]
+```
+
+**Observation**: Only the internal execution path changes. Input/output data structures are identical.
+
+---
+
 ## Validation Summary
 
 | Entity | Validation Rules | Enforces |
@@ -463,7 +594,7 @@ When implementing user authentication and analytics:
 | **StudentQuestion** | min_length=3, max_length=10000, non-empty | FR-002, FR-006 |
 | **TutorResponse** | non-empty response | FR-009 |
 | **ValidationError** | error_type enum, non-empty message | FR-007 |
-| **EducationalAgent** | valid instructions, valid API key | FR-003, FR-011 |
+| **EducationalAgent** | valid instructions, valid API key, OpenAIChatCompletionsModel config | FR-003, FR-011, FR-014 |
 | **RateLimitState** | max 10/minute | FR-013 |
 
 ---
@@ -518,6 +649,7 @@ StudentQuestion(question="   ")  # Raises ValidationError
 | **FR-011**: Ready in 5 seconds | `EducationalAgent` initialization |
 | **FR-012**: Handle concurrency | Stateless models support concurrency |
 | **FR-013**: Rate limiting | `RateLimitState` + slowapi |
+| **FR-014**: OpenAIChatCompletionsModel | `EducationalAgent.model: OpenAIChatCompletionsModel` |
 
 ---
 

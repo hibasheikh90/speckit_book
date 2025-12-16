@@ -1,4 +1,4 @@
-# Research Document: OpenAI Agent SDK with Gemini Integration
+# Research Document: OpenAI Agent SDK with OpenAIChatCompletionsModel and Gemini Integration
 
 **Feature**: Backend Chat Communication Service
 **Branch**: `001-fastapi-chat-endpoint`
@@ -7,19 +7,19 @@
 
 ## Executive Summary
 
-This research resolves all technical unknowns for implementing a FastAPI chat endpoint using the **OpenAI Agent SDK** configured with **Gemini 2.0 Flash** via **LiteLLM**. The OpenAI Agent SDK provides a production-ready, Python-first framework for agent orchestration, while LiteLLM enables provider-agnostic model integration.
+This research resolves all technical unknowns for implementing a FastAPI chat endpoint using the **OpenAI Agent SDK** configured with **OpenAIChatCompletionsModel** and **Gemini 2.0 Flash**. The OpenAI Agent SDK provides a production-ready, Python-first framework for agent orchestration, while OpenAIChatCompletionsModel enables direct model configuration with Gemini.
 
 ## 1. OpenAI Agent SDK Architecture
 
 ### Decision: Use OpenAI Agent SDK for Agent Orchestration
 
-**What was chosen**: OpenAI Agent SDK (openai-agents) as the primary framework for building the educational AI tutor agent.
+**What was chosen**: OpenAI Agent SDK (openai-agents) as the primary framework for building the educational AI tutor agent, using OpenAIChatCompletionsModel for Gemini integration.
 
 **Rationale**:
 - **Production-Ready**: Described as "a production-ready upgrade" from the earlier Swarm framework
 - **Python-First Design**: Leverages native Python features for orchestration rather than proprietary abstractions
 - **Built-in Primitives**: Provides Agents, Handoffs, Guardrails, Sessions, and Tracing out of the box
-- **Provider Agnostic**: Supports 100+ LLMs through LiteLLM integration
+- **Provider Agnostic**: Supports 100+ LLMs through direct model configuration
 - **Educational Fit**: Instructions-based configuration aligns with injecting Global Constitution principles
 
 **Alternatives Considered**:
@@ -73,31 +73,29 @@ result = await Runner.run(agent, "Explain ROS 2 nodes")
 - Safety checks for educational content quality
 - Custom guardrails can be implemented as needed
 
-## 2. LiteLLM + Gemini Integration
+## 2. OpenAIChatCompletionsModel + Gemini Integration
 
-### Decision: Use LiteLLM to Configure Gemini 2.0 Flash
+### Decision: Use OpenAIChatCompletionsModel to Configure Gemini 2.0 Flash
 
-**What was chosen**: LiteLLM extension with Gemini 2.0 Flash (gemini-2.0-flash) as the underlying language model.
+**What was chosen**: OpenAIChatCompletionsModel with direct Gemini 2.0 Flash (gemini-2.0-flash) configuration as the underlying language model.
 
 **Rationale**:
-- **Provider Flexibility**: Enables switching between 100+ LLMs without code changes
+- **Direct Integration**: Provides clean, direct access to Gemini models without additional abstraction layers
 - **Cost Optimization**: Gemini 2.0 Flash provides excellent performance at lower cost than GPT-4
-- **Production-Ready Integration**: LiteLLM is battle-tested with extensive model support
-- **OpenAI Agents Compatibility**: Official extension from OpenAI Agents SDK
+- **Performance**: Direct model integration offers lower latency than multi-provider solutions
+- **OpenAI Agents Compatibility**: Native integration with OpenAI Agents SDK ecosystem
 - **Gemini Capabilities**: Supports structured output, tool use, and high token limits
 
 **Alternatives Considered**:
 - **OpenAI GPT-4**: Rejected due to higher cost and vendor lock-in
 - **Anthropic Claude**: Rejected due to lack of production requirements for multi-provider support
-- **Direct Gemini SDK**: Rejected because it lacks the agent orchestration layer we need
+- **LiteLLM**: Rejected because it adds unnecessary abstraction layer when direct integration is available
 
 ### Configuration Approach
 
 #### Installation
 ```bash
 pip install openai-agents
-pip install 'openai-agents[litellm]'
-pip install litellm
 ```
 
 #### Environment Setup
@@ -105,32 +103,31 @@ pip install litellm
 export GEMINI_API_KEY="your-api-key-from-google-ai-studio"
 ```
 
-#### Agent Configuration with LiteLLM
+#### Agent Configuration with OpenAIChatCompletionsModel
 ```python
-from agents import Agent, Runner
-from agents.extensions.models.litellm_model import LitellmModel
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
 
-# Initialize agent with Gemini via LiteLLM
+# Create AsyncOpenAI client configured for Gemini
+gemini_client = AsyncOpenAI(
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
+# Wrap client in OpenAIChatCompletionsModel
+model = OpenAIChatCompletionsModel(
+    model="gemini-2.0-flash",
+    openai_client=gemini_client
+)
+
+# Initialize agent with Gemini via OpenAIChatCompletionsModel
 agent = Agent(
     name="Educational Tutor",
     instructions="You are an educational AI tutor...",
-    model=LitellmModel(
-        model="gemini/gemini-2.0-flash",
-        api_key=os.environ["GEMINI_API_KEY"]
-    )
+    model=model
 )
 
 # Execute
 result = await Runner.run(agent, "What is Physical AI?")
-```
-
-#### Alternative Configuration (Model String)
-```python
-# Simpler string-based configuration
-agent = Agent(
-    model="litellm/gemini/gemini-2.0-flash",
-    # ... other parameters
-)
 ```
 
 ## 3. Educational Principles Injection
@@ -213,8 +210,7 @@ async for event in Runner.run_stream(agent, question):
 ```python
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from agents import Agent, Runner
-from agents.extensions.models.litellm_model import LitellmModel
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
 
 app = FastAPI()
 
@@ -229,13 +225,25 @@ class QuestionResponse(BaseModel):
 @app.on_event("startup")
 async def initialize_agent():
     global tutor_agent
+
+    # Create Gemini-configured client
+    gemini_client = AsyncOpenAI(
+        api_key=settings.gemini_api_key,
+        base_url=settings.gemini_base_url,
+    )
+
+    # Wrap in OpenAIChatCompletionsModel
+    model = OpenAIChatCompletionsModel(
+        model=settings.gemini_model,
+        openai_client=gemini_client
+    )
+
+    # Create agent with instructions (system prompt)
+    constitution = load_educational_instructions()
     tutor_agent = Agent(
         name="Educational Tutor",
-        instructions=load_educational_instructions(),
-        model=LitellmModel(
-            model="gemini/gemini-2.0-flash",
-            api_key=os.environ["GEMINI_API_KEY"]
-        )
+        instructions=constitution,
+        model=model
     )
 
 @app.post("/chat", response_model=QuestionResponse)
@@ -333,8 +341,7 @@ async def chat(request: Request, question_request: QuestionRequest):
 fastapi==0.115.0
 uvicorn[standard]==0.32.0
 pydantic==2.10.0
-openai-agents==0.1.0
-litellm==1.76.1
+openai-agents==0.6.0  # Replaces openai package
 slowapi==0.1.9
 python-dotenv==1.0.0
 ```
@@ -395,7 +402,89 @@ async def test_rate_limiting_enforced():
                 assert response.status_code == 429  # Rate limit exceeded
 ```
 
-## 10. Context7 MCP Server Integration
+## 10. Migration from AsyncOpenAI to OpenAIChatCompletionsModel
+
+### Key Implementation Differences
+
+| Aspect | Previous (AsyncOpenAI) | New (OpenAIChatCompletionsModel) |
+|--------|----------------------|------------------|
+| **Package** | `openai` | `openai-agents` |
+| **Import** | `from openai import AsyncOpenAI` | `from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel` |
+| **Client** | Direct AsyncOpenAI | AsyncOpenAI wrapped in OpenAIChatCompletionsModel |
+| **System Prompt** | Passed in messages array | Agent `instructions` parameter |
+| **Execution** | `client.chat.completions.create()` | `Runner.run(agent, input=message)` |
+| **Response** | `response.choices[0].message.content` | `result.final_output` |
+| **Error Handling** | Custom exceptions | Custom exceptions (wrap SDK errors) |
+
+### Migration Pattern
+
+#### Current Implementation (AsyncOpenAI)
+```python
+# backend/src/backend/agent.py
+from openai import AsyncOpenAI
+
+class AITutor:
+    def __init__(self):
+        self.client = AsyncOpenAI(
+            api_key=settings.gemini_api_key,
+            base_url=settings.gemini_base_url,
+        )
+        self.model = settings.gemini_model
+        self.system_prompt = self._load_constitution()
+
+    async def generate_response(self, message: str) -> str:
+        response = await asyncio.wait_for(
+            self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": message},
+                ],
+            ),
+            timeout=settings.request_timeout,
+        )
+        return response.choices[0].message.content.strip()
+```
+
+#### Migrated Implementation (OpenAIChatCompletionsModel)
+```python
+# backend/src/backend/agent.py
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
+
+class AITutor:
+    def __init__(self):
+        # Create Gemini-configured client
+        gemini_client = AsyncOpenAI(
+            api_key=settings.gemini_api_key,
+            base_url=settings.gemini_base_url,
+        )
+
+        # Wrap in OpenAIChatCompletionsModel
+        model = OpenAIChatCompletionsModel(
+            model=settings.gemini_model,
+            openai_client=gemini_client
+        )
+
+        # Create agent with instructions (system prompt)
+        constitution = self._load_constitution()
+        self.agent = Agent(
+            name="Educational Tutor",
+            instructions=constitution,
+            model=model
+        )
+
+    async def generate_response(self, message: str) -> str:
+        result = await asyncio.wait_for(
+            Runner.run(
+                starting_agent=self.agent,
+                input=message
+            ),
+            timeout=settings.request_timeout
+        )
+        return result.final_output.strip()
+```
+
+## 11. Context7 MCP Server Integration
 
 ### Decision: Use Context7 for Documentation Access
 
@@ -416,7 +505,7 @@ async def test_rate_limiting_enforced():
 | Area | Decision | Rationale |
 |------|----------|-----------|
 | **Agent Framework** | OpenAI Agent SDK | Production-ready, Python-first, provider-agnostic |
-| **LLM Provider** | Gemini 2.0 Flash via LiteLLM | Cost-effective, high performance, flexible |
+| **LLM Provider** | Gemini 2.0 Flash via OpenAIChatCompletionsModel | Cost-effective, high performance, direct integration |
 | **Backend Framework** | FastAPI with async | Native async support, auto documentation, validation |
 | **Constitution Injection** | Agent instructions parameter | Native support, persistent context, testable |
 | **Response Mode** | Non-streaming (MVP) | Simplicity, meets success criteria, easy to test |
@@ -424,15 +513,16 @@ async def test_rate_limiting_enforced():
 | **Error Handling** | Multi-layer (validation + agent + service) | Comprehensive, informative, meets FR-006/FR-007 |
 | **Testing** | Pytest async + contract tests | Aligns with Python ecosystem, async support |
 | **Documentation Source** | Context7 MCP server | Always current, AI-native workflow |
+| **Migration** | OpenAIChatCompletionsModel instead of AsyncOpenAI | Better SDK integration, future agent features |
 
 ## References
 
 - [OpenAI Agents SDK Documentation](https://openai.github.io/openai-agents-python/)
 - [OpenAI Agents SDK - GitHub](https://github.com/openai/openai-agents-python)
-- [LiteLLM Models - OpenAI Agents](https://openai.github.io/openai-agents-python/models/litellm/)
-- [Gemini Configuration - LiteLLM](https://docs.litellm.ai/docs/providers/gemini)
-- [Local OpenAI Agents with LiteLLM](https://getstream.io/blog/local-openai-agents/)
-- [LiteLLM Gemini Integration](https://medium.com/google-cloud/litellm-seamless-multi-llm-integration-3f69f540891e)
+- [Models - OpenAI Agents SDK](https://openai.github.io/openai-agents-python/models/)
+- [Runner - OpenAI Agents SDK](https://openai.github.io/openai-agents-python/ref/run/)
+- [Agents - OpenAI Agents SDK](https://openai.github.io/openai-agents-python/ref/agent/)
+- [openai-agents · PyPI](https://pypi.org/project/openai-agents/)
 
 ## Next Steps
 
@@ -440,4 +530,4 @@ async def test_rate_limiting_enforced():
 2. Generate API contracts in /contracts/
 3. Create quickstart.md for developers
 4. Update plan.md with architectural decisions
-5. Update agent context with new technologies (OpenAI Agent SDK, LiteLLM)
+5. Update agent context with new technologies (OpenAI Agent SDK, OpenAIChatCompletionsModel)

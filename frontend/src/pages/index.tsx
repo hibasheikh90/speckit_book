@@ -6,26 +6,30 @@ import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
 
-import styles from './index.module.css';
-
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-           Physical AI & Humanoid Robotics
-        </Heading>
-        <p className="hero__subtitle">Master the future of AI-powered robotics with hands-on learning</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/intro">
-            Get Started
+    <section className="hero-section">
+      <div className="hero-content">
+        <div className="hero-text">
+          <h1 className="hero-title">
+            Physical AI & Humanoid Robotics
+          </h1>
+          <p className="hero-subtitle">Master the future of AI-powered robotics with hands-on learning</p>
+          <Link className="hero-cta" to="/docs/intro">
+            Sign in to Read
           </Link>
         </div>
+        <div className="hero-robot">
+          <div className="robot-container">
+            <div className="spotlight"></div>
+            <div className="robot-frame">
+              <div className="robot-icon">🤖</div>
+            </div>
+          </div>
+        </div>
       </div>
-    </header>
+    </section>
   );
 }
 
