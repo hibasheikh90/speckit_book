@@ -31,9 +31,9 @@ By the end of this chapter, you will be able to:
 ```mermaid
 graph TB
     subgraph "Testing Pyramid for Robotics"
-        A[System Tests<br/>End-to-end in simulation/real<br/>10% of tests]
-        B[Integration Tests<br/>Multi-node interactions<br/>30% of tests]
-        C[Unit Tests<br/>Individual functions/nodes<br/>60% of tests]
+        A[System Tests\nEnd-to-end in simulation/real\n10% of tests]
+        B[Integration Tests\nMulti-node interactions\n30% of tests]
+        C[Unit Tests\nIndividual functions/nodes\n60% of tests]
     end
 
     C --> B
@@ -775,11 +775,11 @@ Overall success rate: 100.0%
 ```mermaid
 graph TB
     subgraph "Sim-to-Real Validation Pipeline"
-        A[Train in Simulation<br/>Isaac Sim]
-        B[Test in Simulation<br/>Baseline metrics]
+        A[Train in Simulation\nIsaac Sim]
+        B[Test in Simulation\nBaseline metrics]
         C[Deploy to Real Robot]
-        D[Test on Real Robot<br/>Same scenarios]
-        E[Compute Gap<br/>Real vs Sim metrics]
+        D[Test on Real Robot\nSame scenarios]
+        E[Compute Gap\nReal vs Sim metrics]
     end
 
     A --> B

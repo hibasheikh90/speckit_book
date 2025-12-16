@@ -37,11 +37,11 @@ Think of services like a restaurant order:
 
 ```mermaid
 sequenceDiagram
-    participant Client as Navigation Node<br/>(Client)
-    participant Service as Path Planner<br/>(Service Server)
+    participant Client as Navigation Node\n(Client)
+    participant Service as Path Planner\n(Service Server)
 
     Client->>Service: Request: Compute path to (x, y)
-    Note over Service: Processing request...<br/>Running A* algorithm
+    Note over Service: Processing request...\nRunning A* algorithm
     Service-->>Client: Response: [waypoint1, waypoint2, ...]
 
     Note over Client: Continues with path

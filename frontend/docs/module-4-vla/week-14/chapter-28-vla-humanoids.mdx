@@ -42,21 +42,21 @@ By the end of this chapter, you will be able to:
 
 ```mermaid
 graph TB
-    A[Humanoid Robot<br/>30-50 DOF] --> B[Challenges]
+    A[Humanoid Robot\n30-50 DOF] --> B[Challenges]
 
-    B --> C[Whole-Body Control<br/>Maintain balance]
-    B --> D[High Dimensionality<br/>50+ action dimensions]
-    B --> E[Dexterous Hands<br/>Complex grasping]
-    B --> F[Task Diversity<br/>1000s of tasks]
+    B --> C[Whole-Body Control\nMaintain balance]
+    B --> D[High Dimensionality\n50+ action dimensions]
+    B --> E[Dexterous Hands\nComplex grasping]
+    B --> F[Task Diversity\n1000s of tasks]
 
     C --> G[VLA Solution]
     D --> G
     E --> G
     F --> G
 
-    G --> H[Language Conditioning<br/>Natural task specification]
-    G --> I[Learned Priors<br/>From demonstrations]
-    G --> J[Multimodal Perception<br/>Vision + proprioception]
+    G --> H[Language Conditioning\nNatural task specification]
+    G --> I[Learned Priors\nFrom demonstrations]
+    G --> J[Multimodal Perception\nVision + proprioception]
 
     style B fill:#FF9800
     style G fill:#4CAF50
@@ -80,21 +80,21 @@ graph TB
 
 ```mermaid
 graph TB
-    A[Vision Input<br/>Head + Wrist Cameras] --> B[Vision Encoder<br/>CLIP-ViT]
-    C[Language Input<br/>Task instruction] --> D[Language Encoder<br/>T5]
-    E[Proprioception<br/>Joint angles, IMU] --> F[State Encoder<br/>MLP]
+    A[Vision Input\nHead + Wrist Cameras] --> B[Vision Encoder\nCLIP-ViT]
+    C[Language Input\nTask instruction] --> D[Language Encoder\nT5]
+    E[Proprioception\nJoint angles, IMU] --> F[State Encoder\nMLP]
 
-    B --> G[Multimodal Fusion<br/>Cross-Attention]
+    B --> G[Multimodal Fusion\nCross-Attention]
     D --> G
     F --> G
 
-    G --> H[Action Decoder<br/>Transformer]
+    G --> H[Action Decoder\nTransformer]
 
-    H --> I[Body Actions<br/>Torso, legs]
-    H --> J[Arm Actions<br/>Left + right arms]
-    H --> K[Hand Actions<br/>Finger joints]
+    H --> I[Body Actions\nTorso, legs]
+    H --> J[Arm Actions\nLeft + right arms]
+    H --> K[Hand Actions\nFinger joints]
 
-    I --> L[Whole-Body<br/>Controller]
+    I --> L[Whole-Body\nController]
     J --> L
     K --> L
 
@@ -195,11 +195,11 @@ class HierarchicalVLA(nn.Module):
 graph LR
     A[VLA Action] --> B{Balance Check}
 
-    B -->|Stable| C[Execute Action<br/>Normal]
-    B -->|Unstable| D[Reject Action<br/>+ Replan]
+    B -->|Stable| C[Execute Action\nNormal]
+    B -->|Unstable| D[Reject Action\n+ Replan]
 
     C --> E[Update Robot State]
-    D --> F[Balance Recovery<br/>Adjust torso/legs]
+    D --> F[Balance Recovery\nAdjust torso/legs]
 
     F --> E
 
@@ -294,21 +294,21 @@ def compute_loss(predicted_action, true_action, balance_score, is_stable):
 
 ```mermaid
 graph TB
-    A[Dexterous Hand<br/>12-20 DOF] --> B[Challenges]
+    A[Dexterous Hand\n12-20 DOF] --> B[Challenges]
 
-    B --> C[High Dimensionality<br/>Complex action space]
-    B --> D[Contact Dynamics<br/>Finger-object interaction]
-    B --> E[Tactile Feedback<br/>Force sensing]
-    B --> F[Precision Grasping<br/>Sub-millimeter accuracy]
+    B --> C[High Dimensionality\nComplex action space]
+    B --> D[Contact Dynamics\nFinger-object interaction]
+    B --> E[Tactile Feedback\nForce sensing]
+    B --> F[Precision Grasping\nSub-millimeter accuracy]
 
     C --> G[VLA Solutions]
     D --> G
     E --> G
     F --> G
 
-    G --> H[Learned Manipulation<br/>From demonstrations]
-    G --> I[Tactile Encoders<br/>Process touch sensors]
-    G --> J[Grasp Prediction<br/>Pre-shape + refine]
+    G --> H[Learned Manipulation\nFrom demonstrations]
+    G --> I[Tactile Encoders\nProcess touch sensors]
+    G --> J[Grasp Prediction\nPre-shape + refine]
 
     style B fill:#FF9800
     style G fill:#4CAF50
@@ -422,11 +422,11 @@ def dexterous_grasp(hand_vla, object_image, object_pose):
 
 ```mermaid
 graph TB
-    A[Vision Input<br/>Head camera] --> B[Shared Encoder<br/>Scene understanding]
+    A[Vision Input\nHead camera] --> B[Shared Encoder\nScene understanding]
 
-    B --> C[Left Arm Policy<br/>7 DOF]
-    B --> D[Right Arm Policy<br/>7 DOF]
-    B --> E[Coordination Module<br/>Sync timing]
+    B --> C[Left Arm Policy\n7 DOF]
+    B --> D[Right Arm Policy\n7 DOF]
+    B --> E[Coordination Module\nSync timing]
 
     C --> F[Left Arm Action]
     D --> G[Right Arm Action]
@@ -692,13 +692,13 @@ class Figure01VLA(nn.Module):
 
 ```mermaid
 graph LR
-    A[Web Videos<br/>100M+ videos] --> B[Pre-training<br/>Video prediction]
+    A[Web Videos\n100M+ videos] --> B[Pre-training\nVideo prediction]
 
-    B --> C[Pre-trained VLM<br/>Understands actions]
+    B --> C[Pre-trained VLM\nUnderstands actions]
 
-    C --> D[Robot Fine-tuning<br/>10k demos]
+    C --> D[Robot Fine-tuning\n10k demos]
 
-    D --> E[Optimus VLA<br/>Deployed policy]
+    D --> E[Optimus VLA\nDeployed policy]
 
     style A fill:#4CAF50
     style C fill:#2196F3

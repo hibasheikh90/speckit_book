@@ -60,17 +60,17 @@ Models trained **only** on synthetic data often fail on real data due to:
 ```mermaid
 graph TB
     A[Synthetic Data Generator] --> B[Randomize Scene]
-    B --> C[Objects<br/>Poses, Scales, Clutter]
-    B --> D[Appearance<br/>Textures, Colors]
-    B --> E[Environment<br/>Lighting, Backgrounds]
-    B --> F[Sensors<br/>Noise, Motion Blur]
+    B --> C[Objects\nPoses, Scales, Clutter]
+    B --> D[Appearance\nTextures, Colors]
+    B --> E[Environment\nLighting, Backgrounds]
+    B --> F[Sensors\nNoise, Motion Blur]
 
     C --> G[Render Image]
     D --> G
     E --> G
     F --> G
 
-    G --> H[Export with Annotations<br/>Bounding Boxes, Masks]
+    G --> H[Export with Annotations\nBounding Boxes, Masks]
 ```
 
 **Randomization Strategies**:

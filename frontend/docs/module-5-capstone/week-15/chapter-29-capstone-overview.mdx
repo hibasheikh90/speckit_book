@@ -55,25 +55,25 @@ You've spent 14 weeks mastering the building blocks of Physical AI:
 
 ```mermaid
 graph TB
-    A[Human Operator] -->|"Bring me the<br/>blue box from shelf A"| B[VLA Command Parser]
+    A[Human Operator] -->|"Bring me the\nblue box from shelf A"| B[VLA Command Parser]
 
-    B --> C[Task Planner<br/>Break into subtasks]
+    B --> C[Task Planner\nBreak into subtasks]
 
-    C --> D[Navigation System<br/>Path to shelf A]
-    C --> E[Manipulation System<br/>Grasp blue box]
-    C --> F[Return Navigation<br/>Path to operator]
+    C --> D[Navigation System\nPath to shelf A]
+    C --> E[Manipulation System\nGrasp blue box]
+    C --> F[Return Navigation\nPath to operator]
 
-    D --> G[Perception Pipeline<br/>Vision + sensors]
+    D --> G[Perception Pipeline\nVision + sensors]
     E --> G
     F --> G
 
-    G --> H[Whole-Body Controller<br/>30+ DOF coordination]
+    G --> H[Whole-Body Controller\n30+ DOF coordination]
 
-    H --> I[Humanoid Robot<br/>Executes task]
+    H --> I[Humanoid Robot\nExecutes task]
 
     I --> J{Task Complete?}
     J -->|No| G
-    J -->|Yes| K[Report Success<br/>Return to idle]
+    J -->|Yes| K[Report Success\nReturn to idle]
 
     style B fill:#2196F3
     style C fill:#FF9800
@@ -90,33 +90,33 @@ graph TB
 ```mermaid
 graph TB
     subgraph "User Interface Layer"
-        A[Natural Language<br/>Interface]
-        B[Monitoring<br/>Dashboard]
+        A[Natural Language\nInterface]
+        B[Monitoring\nDashboard]
     end
 
     subgraph "Planning Layer"
-        C[VLA Task Planner<br/>OpenVLA / RT-2]
-        D[Motion Planner<br/>MoveIt 2]
-        E[Navigation Planner<br/>Nav2]
+        C[VLA Task Planner\nOpenVLA / RT-2]
+        D[Motion Planner\nMoveIt 2]
+        E[Navigation Planner\nNav2]
     end
 
     subgraph "Perception Layer"
-        F[Vision Pipeline<br/>Multi-camera fusion]
-        G[Object Detection<br/>YOLOv8]
-        H[Depth Estimation<br/>DPT]
-        I[State Estimation<br/>IMU + encoders]
+        F[Vision Pipeline\nMulti-camera fusion]
+        G[Object Detection\nYOLOv8]
+        H[Depth Estimation\nDPT]
+        I[State Estimation\nIMU + encoders]
     end
 
     subgraph "Control Layer"
-        J[Whole-Body Controller<br/>Balance + manipulation]
-        K[Arm Controllers<br/>2x 7-DOF]
-        L[Hand Controllers<br/>2x gripper/dexterous]
-        M[Locomotion Controller<br/>Bipedal walking]
+        J[Whole-Body Controller\nBalance + manipulation]
+        K[Arm Controllers\n2x 7-DOF]
+        L[Hand Controllers\n2x gripper/dexterous]
+        M[Locomotion Controller\nBipedal walking]
     end
 
     subgraph "Hardware Layer"
-        N[Humanoid Robot<br/>Sensors + Actuators]
-        O[Onboard Compute<br/>NVIDIA Jetson Orin]
+        N[Humanoid Robot\nSensors + Actuators]
+        O[Onboard Compute\nNVIDIA Jetson Orin]
     end
 
     A --> C

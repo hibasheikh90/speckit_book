@@ -31,36 +31,36 @@ By the end of this chapter, you will be able to:
 ```mermaid
 graph TB
     subgraph "Perception Layer"
-        A[camera_driver<br/>Multi-camera publisher]
-        B[object_detector<br/>YOLOv8 TensorRT]
-        C[depth_estimator<br/>DPT or RealSense]
-        D[perception_fusion<br/>3D pose estimation]
+        A[camera_driver\nMulti-camera publisher]
+        B[object_detector\nYOLOv8 TensorRT]
+        C[depth_estimator\nDPT or RealSense]
+        D[perception_fusion\n3D pose estimation]
     end
 
     subgraph "Planning Layer"
-        E[vla_policy<br/>OpenVLA TensorRT]
-        F[motion_planner<br/>MoveIt 2]
-        G[navigation_stack<br/>Nav2]
-        H[task_manager<br/>State machine]
+        E[vla_policy\nOpenVLA TensorRT]
+        F[motion_planner\nMoveIt 2]
+        G[navigation_stack\nNav2]
+        H[task_manager\nState machine]
     end
 
     subgraph "Control Layer"
-        I[whole_body_controller<br/>Balance + coordination]
-        J[arm_controller_left<br/>7-DOF trajectory]
-        K[arm_controller_right<br/>7-DOF trajectory]
-        L[locomotion_controller<br/>Stance/walk]
+        I[whole_body_controller\nBalance + coordination]
+        J[arm_controller_left\n7-DOF trajectory]
+        K[arm_controller_right\n7-DOF trajectory]
+        L[locomotion_controller\nStance/walk]
     end
 
     subgraph "Hardware Interface"
-        M[robot_state_publisher<br/>TF tree]
-        N[joint_state_publisher<br/>Sensor data]
-        O[hardware_interface<br/>Motor drivers]
+        M[robot_state_publisher\nTF tree]
+        N[joint_state_publisher\nSensor data]
+        O[hardware_interface\nMotor drivers]
     end
 
     subgraph "Monitoring"
-        P[safety_monitor<br/>Fall detection]
-        Q[diagnostics<br/>Health checks]
-        R[rviz2<br/>Visualization]
+        P[safety_monitor\nFall detection]
+        Q[diagnostics\nHealth checks]
+        R[rviz2\nVisualization]
     end
 
     A -->|/camera/image_raw| B

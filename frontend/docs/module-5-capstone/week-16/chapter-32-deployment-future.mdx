@@ -31,22 +31,22 @@ By the end of this chapter, you will be able to:
 ```mermaid
 graph TB
     subgraph "Pre-Deployment"
-        A[System Testing<br/>All tests pass]
-        B[Safety Certification<br/>Risk assessment]
-        C[Performance Validation<br/>Meets requirements]
-        D[Documentation<br/>User + maintenance]
+        A[System Testing\nAll tests pass]
+        B[Safety Certification\nRisk assessment]
+        C[Performance Validation\nMeets requirements]
+        D[Documentation\nUser + maintenance]
     end
 
     subgraph "Deployment"
-        E[Staged Rollout<br/>Pilot → Limited → Full]
-        F[Monitoring Setup<br/>Logging + alerts]
-        G[Failover Systems<br/>Redundancy]
+        E[Staged Rollout\nPilot → Limited → Full]
+        F[Monitoring Setup\nLogging + alerts]
+        G[Failover Systems\nRedundancy]
     end
 
     subgraph "Post-Deployment"
-        H[Performance Monitoring<br/>Telemetry analysis]
-        I[Incident Response<br/>On-call team]
-        J[Continuous Updates<br/>OTA patches]
+        H[Performance Monitoring\nTelemetry analysis]
+        I[Incident Response\nOn-call team]
+        J[Continuous Updates\nOTA patches]
     end
 
     A --> E
@@ -282,21 +282,21 @@ if __name__ == '__main__':
 ```mermaid
 graph TB
     subgraph "Robot Fleet"
-        R1[Robot 1<br/>Telemetry]
-        R2[Robot 2<br/>Telemetry]
-        R3[Robot N<br/>Telemetry]
+        R1[Robot 1\nTelemetry]
+        R2[Robot 2\nTelemetry]
+        R3[Robot N\nTelemetry]
     end
 
     subgraph "Data Pipeline"
-        A[Message Broker<br/>MQTT/ROS 2 DDS]
-        B[Time-Series DB<br/>InfluxDB]
-        C[Log Storage<br/>Elasticsearch]
+        A[Message Broker\nMQTT/ROS 2 DDS]
+        B[Time-Series DB\nInfluxDB]
+        C[Log Storage\nElasticsearch]
     end
 
     subgraph "Monitoring & Alerts"
-        D[Metrics Dashboard<br/>Grafana]
-        E[Alert Manager<br/>Prometheus]
-        F[On-Call System<br/>PagerDuty]
+        D[Metrics Dashboard\nGrafana]
+        E[Alert Manager\nPrometheus]
+        F[On-Call System\nPagerDuty]
     end
 
     R1 --> A
@@ -543,19 +543,19 @@ if __name__ == '__main__':
 ```mermaid
 graph TB
     subgraph "Ethical Principles"
-        A[Safety<br/>No harm to humans]
-        B[Privacy<br/>Data protection]
-        C[Fairness<br/>No bias/discrimination]
-        D[Transparency<br/>Explainable actions]
-        E[Accountability<br/>Clear responsibility]
+        A[Safety\nNo harm to humans]
+        B[Privacy\nData protection]
+        C[Fairness\nNo bias/discrimination]
+        D[Transparency\nExplainable actions]
+        E[Accountability\nClear responsibility]
     end
 
     subgraph "Implementation"
-        F[Safety Protocols<br/>E-stops, testing]
-        G[Data Governance<br/>Encryption, consent]
-        H[Bias Testing<br/>Diverse datasets]
-        I[Logging & Audits<br/>Action history]
-        J[Human Oversight<br/>Intervention rights]
+        F[Safety Protocols\nE-stops, testing]
+        G[Data Governance\nEncryption, consent]
+        H[Bias Testing\nDiverse datasets]
+        I[Logging & Audits\nAction history]
+        J[Human Oversight\nIntervention rights]
     end
 
     A --> F
@@ -888,21 +888,21 @@ timeline
 ```mermaid
 graph TB
     subgraph "Near-Term (1-3 years)"
-        A[Improved VLA<br/>architectures]
-        B[Better sim-to-real<br/>transfer]
-        C[Faster learning<br/>from demos]
+        A[Improved VLA\narchitectures]
+        B[Better sim-to-real\ntransfer]
+        C[Faster learning\nfrom demos]
     end
 
     subgraph "Mid-Term (3-7 years)"
-        D[General-purpose<br/>humanoids]
-        E[Reliable outdoor<br/>operation]
-        F[Human-level<br/>dexterity]
+        D[General-purpose\nhumanoids]
+        E[Reliable outdoor\noperation]
+        F[Human-level\ndexterity]
     end
 
     subgraph "Long-Term (7+ years)"
-        G[Autonomous<br/>self-improvement]
-        H[Human-level<br/>reasoning]
-        I[Fully autonomous<br/>factories]
+        G[Autonomous\nself-improvement]
+        H[Human-level\nreasoning]
+        I[Fully autonomous\nfactories]
     end
 
     A --> D
@@ -953,20 +953,20 @@ graph TB
 
 ```mermaid
 graph LR
-    A[You Are Here<br/>Completed Course] --> B{Choose Path}
+    A[You Are Here\nCompleted Course] --> B{Choose Path}
 
-    B --> C[Research Track<br/>Publish papers]
-    B --> D[Industry Track<br/>Build products]
-    B --> E[Teaching Track<br/>Mentor others]
+    B --> C[Research Track\nPublish papers]
+    B --> D[Industry Track\nBuild products]
+    B --> E[Teaching Track\nMentor others]
 
-    C --> F[PhD Program<br/>Contribute to field]
-    C --> G[Open-Source<br/>GitHub projects]
+    C --> F[PhD Program\nContribute to field]
+    C --> G[Open-Source\nGitHub projects]
 
-    D --> H[Startup<br/>Found company]
-    D --> I[Big Tech<br/>Join team]
+    D --> H[Startup\nFound company]
+    D --> I[Big Tech\nJoin team]
 
-    E --> J[Tutorials<br/>YouTube, blogs]
-    E --> K[Courses<br/>Create curriculum]
+    E --> J[Tutorials\nYouTube, blogs]
+    E --> K[Courses\nCreate curriculum]
 
     style A fill:#4CAF50
     style C fill:#2196F3
