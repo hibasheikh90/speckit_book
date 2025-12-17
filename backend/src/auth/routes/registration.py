@@ -1,12 +1,17 @@
 """Registration endpoint implementation."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+import sys
+from pathlib import Path
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
-from ...config.database import get_db
-from ..models.request import UserRegistrationRequest, UserRegistrationResponse
-from ..services.registration_service import RegistrationService
-from ..exceptions import UserAlreadyExistsException, WeakPasswordException, InvalidEmailException
-from ..middleware.rate_limiter import limiter, get_rate_limit_for_auth
+
+# Add src directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from config.database import get_db
+from auth.models.request import UserRegistrationRequest, UserRegistrationResponse
+from auth.services.registration_service import RegistrationService
+from auth.exceptions import UserAlreadyExistsException, WeakPasswordException, InvalidEmailException
+from auth.middleware.rate_limiter import limiter, get_rate_limit_for_auth
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -14,7 +19,8 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 @router.post("/register", response_model=UserRegistrationResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit(get_rate_limit_for_auth())  # Apply rate limiting (5 attempts per 15 minutes)
 def register_user(
-    request: UserRegistrationRequest,
+    user_request: UserRegistrationRequest,
+    request: Request,
     db: Session = Depends(get_db)
 ):
     """
@@ -23,8 +29,8 @@ def register_user(
     try:
         user, message = RegistrationService.register_user(
             db=db,
-            email=request.email,
-            password=request.password
+            email=user_request.email,
+            password=user_request.password
         )
 
         return UserRegistrationResponse(

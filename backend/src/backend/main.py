@@ -5,13 +5,17 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from .models import ChatRequest, ChatResponse, ErrorResponse
 from .agent import get_agent, initialize_agent
-from ..config.settings import settings
-from ..auth.middleware.jwt import get_current_user
-from ..auth.models.user import User
-from ..auth.routes import registration, login, verify
-from ..config.database import engine, Base
+import sys
 from pathlib import Path
 import asyncio
+
+# Add parent directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from config.settings import settings
+from auth.middleware.jwt import get_current_user
+from auth.models.user import User
+from auth.routes import registration, login, verify
+from config.database import engine, Base
 
 
 # Initialize rate limiter

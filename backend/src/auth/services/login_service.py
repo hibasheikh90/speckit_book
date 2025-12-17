@@ -1,14 +1,19 @@
 """Login service for user authentication operations."""
 
+import sys
+from pathlib import Path
 from datetime import timedelta
 from typing import Tuple, Optional
 from sqlalchemy.orm import Session
-from ..models.user import User
-from .user_service import UserService
-from ..utils.password import verify_password
-from ..utils.jwt import create_access_token
-from ..exceptions import InvalidCredentialsException
-from ...config.settings import settings
+
+# Add src directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from auth.models.user import User
+from auth.services.user_service import UserService
+from auth.utils.password import verify_password
+from auth.utils.jwt import create_access_token
+from auth.exceptions import InvalidCredentialsException
+from config.settings import settings
 
 
 class LoginService:

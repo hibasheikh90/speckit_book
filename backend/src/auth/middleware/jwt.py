@@ -1,14 +1,19 @@
 """JWT validation middleware for protected endpoints."""
 
+import sys
+from pathlib import Path
 from fastapi import HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Dict, Any, Optional
 from sqlalchemy.orm import Session
-from ...config.database import get_db
-from ..models.user import User
-from ..services.user_service import UserService
-from ..utils.jwt import verify_token
-from ..exceptions import TokenValidationException
+
+# Add src directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from config.database import get_db
+from auth.models.user import User
+from auth.services.user_service import UserService
+from auth.utils.jwt import verify_token
+from auth.exceptions import TokenValidationException
 
 
 # Initialize security scheme for JWT in headers

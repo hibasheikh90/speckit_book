@@ -1,11 +1,16 @@
 """Registration service for user registration operations."""
 
+import sys
+from pathlib import Path
 from typing import Tuple, Optional
 from sqlalchemy.orm import Session
-from ..models.user import User
-from .user_service import UserService
-from ..utils.validation import validate_email_format, validate_password_strength
-from ..exceptions import UserAlreadyExistsException, WeakPasswordException, InvalidEmailException
+
+# Add src directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from auth.models.user import User
+from auth.services.user_service import UserService
+from auth.utils.validation import validate_email_format, validate_password_strength
+from auth.exceptions import UserAlreadyExistsException, WeakPasswordException, InvalidEmailException
 
 
 class RegistrationService:

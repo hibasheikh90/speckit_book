@@ -1,11 +1,16 @@
 """User service for database operations."""
 
+import sys
+from pathlib import Path
 from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from ..models.user import User
-from ..utils.password import hash_password
 import uuid
+
+# Add src directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from auth.models.user import User
+from auth.utils.password import hash_password
 
 
 class UserService:

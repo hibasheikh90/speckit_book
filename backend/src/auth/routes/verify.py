@@ -1,10 +1,15 @@
 """Token verification endpoint implementation."""
 
+import sys
+from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from ...config.database import get_db
-from ..models.request import TokenVerificationRequest, TokenVerificationResponse
-from ..middleware.jwt import validate_token_only
+
+# Add src directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from config.database import get_db
+from auth.models.request import TokenVerificationRequest, TokenVerificationResponse
+from auth.middleware.jwt import validate_token_only
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 

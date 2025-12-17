@@ -1,9 +1,14 @@
 """JWT utility functions for creation and validation."""
 
+import sys
+from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 import jwt
-from ...config.settings import settings
+
+# Add src directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from config.settings import settings
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:

@@ -1,12 +1,17 @@
 """Login endpoint implementation."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+import sys
+from pathlib import Path
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
-from ...config.database import get_db
-from ..models.request import UserLoginRequest, UserLoginResponse
-from ..services.login_service import LoginService
-from ..exceptions import InvalidCredentialsException
-from ..middleware.rate_limiter import limiter, get_rate_limit_for_auth
+
+# Add src directory to path for sibling package imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from config.database import get_db
+from auth.models.request import UserLoginRequest, UserLoginResponse
+from auth.services.login_service import LoginService
+from auth.exceptions import InvalidCredentialsException
+from auth.middleware.rate_limiter import limiter, get_rate_limit_for_auth
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -14,7 +19,8 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 @router.post("/login", response_model=UserLoginResponse)
 @limiter.limit(get_rate_limit_for_auth())  # Apply rate limiting (5 attempts per 15 minutes)
 def login_user(
-    request: UserLoginRequest,
+    login_request: UserLoginRequest,
+    request: Request,
     db: Session = Depends(get_db)
 ):
     """
@@ -23,8 +29,8 @@ def login_user(
     try:
         user, access_token, message = LoginService.authenticate_user(
             db=db,
-            email=request.email,
-            password=request.password
+            email=login_request.email,
+            password=login_request.password
         )
 
         return UserLoginResponse(
