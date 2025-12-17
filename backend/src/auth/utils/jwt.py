@@ -58,8 +58,13 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
     except jwt.ExpiredSignatureError:
         # Token has expired
         return None
-    except jwt.JWTError:
-        # Invalid token
+    except jwt.InvalidSignatureError:
+        # Invalid signature
+        print(f"DEBUG: Invalid signature - token may have been signed with different key")
+        return None
+    except Exception as e:
+        # Invalid token or other error
+        print(f"DEBUG: Token validation error: {type(e).__name__}: {str(e)}")
         return None
 
 

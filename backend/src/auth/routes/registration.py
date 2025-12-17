@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
+import traceback
 
 # Add src directory to path for sibling package imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -54,7 +55,11 @@ def register_user(
             detail=e.message
         )
     except Exception as e:
+        # Log the full error for debugging
+        print(f"ERROR in registration endpoint: {type(e).__name__}: {str(e)}")
+        print("Full traceback:")
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An unexpected error occurred during registration"
+            detail=f"Registration error: {type(e).__name__}: {str(e)}"
         )
