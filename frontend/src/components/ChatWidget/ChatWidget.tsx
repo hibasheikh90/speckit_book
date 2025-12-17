@@ -93,7 +93,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = () => {
       return newState;
     });
     setShowChatWindow(false);
-    closeChat(); // Close the global chat state too
+    closeGlobalChat(); // Close the global chat state too
   };
 
   // Only render if widget is visible based on global state

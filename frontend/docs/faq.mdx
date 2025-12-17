@@ -1,0 +1,372 @@
+---
+id: faq
+title: Frequently Asked Questions
+sidebar_position: 99
+description: Common questions about the Physical AI & Humanoid Robotics textbook, ROS 2, Isaac Sim, and VLA robotics
+keywords: [faq, questions, help, ros2, isaac sim, troubleshooting]
+---
+
+# Frequently Asked Questions (FAQ)
+
+## General Questions
+
+### What is this textbook about?
+
+This is a comprehensive, AI-native textbook covering the complete stack for building Physical AI and humanoid robot systems. You'll learn ROS 2, digital twin simulation (Gazebo/Unity), NVIDIA Isaac Platform, and Vision-Language-Action (VLA) models through 32 hands-on chapters.
+
+### Is this textbook free?
+
+Yes! This textbook is completely free and open-source under the MIT License. All content, code examples, and diagrams are available on [GitHub](https://github.com/hibasheikh/hackathon_book).
+
+### Do I need a robotics background?
+
+No. This textbook starts from fundamentals in Module 1. You need:
+- Basic Python programming
+- Linux command-line familiarity
+- Basic math (linear algebra, trigonometry)
+
+See [Prerequisites](/docs/prerequisites) for details.
+
+### How long does it take to complete?
+
+**Recommended timeline**: 16 weeks (10-15 hours/week)
+- Module 1: 4 weeks
+- Module 2: 3 weeks
+- Module 3: 4 weeks
+- Module 4: 3 weeks
+- Module 5: 2 weeks
+
+You can go faster if you already have foundational knowledge.
+
+---
+
+## Technical Requirements
+
+### What operating system do I need?
+
+**Recommended**: Ubuntu 22.04 LTS (Jammy Jellyfish)
+
+**Why?** ROS 2 Humble (LTS) officially supports Ubuntu 22.04, and it has the best compatibility with robotics tools.
+
+**Alternatives**:
+- WSL2 on Windows (limited GPU support)
+- macOS (experimental ROS 2 support)
+- Docker containers
+
+### Do I need an NVIDIA GPU?
+
+**Not for Modules 1-2**: CPU-only is sufficient for ROS 2 and Gazebo.
+
+**Yes for Modules 3-4**: Isaac Sim and VLA training require NVIDIA GPU with 8 GB+ VRAM.
+
+**Don't have a GPU?** Use cloud options:
+- Google Colab (free, limited hours)
+- AWS EC2 with GPU instances
+- NVIDIA NGC (free access)
+
+See [Prerequisites](/docs/prerequisites#️-cloud-options-no-gpu-required) for cloud setup.
+
+### Can I use a virtual machine?
+
+**Yes**, but with limitations:
+- **Good for**: Module 1 (ROS 2 basics)
+- **Not recommended for**: Module 3 (Isaac Sim requires GPU passthrough, which is complex)
+
+Allocate at least:
+- 4+ CPU cores
+- 8 GB+ RAM
+- 50 GB+ storage
+
+---
+
+## Learning Path
+
+### Can I skip modules?
+
+**Yes**, if you already have the prerequisite knowledge:
+
+- **Skip Module 1** if you're proficient in ROS 2 Humble
+- **Skip Module 2** if you're experienced with Gazebo/Unity simulation
+- Each module lists prerequisites at the beginning
+
+**Recommended**: At least skim each module to understand the textbook's teaching approach.
+
+### Are there prerequisites for each module?
+
+**Module 1**: Basic Python, Linux command line
+**Module 2**: Module 1 OR existing ROS 2 knowledge
+**Module 3**: Modules 1-2 OR ROS 2 + Gazebo experience, NVIDIA GPU
+**Module 4**: Modules 1-3 OR robotics + ML experience, GPU
+**Module 5**: All previous modules (capstone integrates everything)
+
+### Can I learn from this textbook without a physical robot?
+
+**Absolutely!** The entire curriculum uses simulation:
+- **Module 1**: ROS 2 (no hardware needed)
+- **Module 2**: Gazebo and Unity simulations
+- **Module 3**: Isaac Sim virtual environments
+- **Module 4**: VLA models tested in simulation
+- **Module 5**: Capstone project in Isaac Sim
+
+Physical robot deployment is optional but recommended for advanced learners.
+
+---
+
+## Content & Features
+
+### What programming languages are used?
+
+**Primary**: Python 3.10+ (90% of code examples)
+
+**Secondary**:
+- YAML (ROS 2 configuration)
+- XML (URDF robot models, launch files)
+- bash (shell scripts)
+- C# (Unity integration in Module 2)
+
+### Are code examples tested?
+
+**Yes!** Every code example is tested in the target environment:
+- **ROS 2 Humble** on Ubuntu 22.04
+- **Isaac Sim 2023.1.1+**
+- **Gazebo Classic 11**
+- **Unity 2022 LTS**
+
+All examples are guaranteed to work if you follow the setup instructions.
+
+### Can I download code examples?
+
+Yes! Downloadable code packages are provided for each module:
+- Module 1: ROS 2 packages
+- Module 2: URDF models, launch files
+- Module 3: Isaac Sim scripts
+- Module 4: VLA model code
+- Module 5: Complete capstone project template
+
+Access them in the chapter pages or the [Resources](/docs/resources) section.
+
+### Is there a bilingual option?
+
+**Yes!** Full English and **اردو (Urdu)** translations are available.
+
+Click the language toggle in the top-right corner to switch. Your preference is saved automatically.
+
+**Translation quality**: Professionally translated by native Urdu speakers with robotics expertise, preserving technical accuracy.
+
+---
+
+## Assessments & Progress
+
+### Are there quizzes?
+
+Yes! Each chapter includes:
+- 5-10 multiple-choice questions
+- Immediate feedback with explanations
+- Reference to relevant chapter sections
+- Unlimited retakes
+
+### How is progress tracked?
+
+**Local storage** (browser-based):
+- Chapter completion checkmarks
+- Quiz scores
+- Lab validation status
+- Overall completion percentage
+- Badges for milestones
+
+**Note**: Progress is saved locally (no account required). Export your progress as JSON for backup.
+
+### Are there certificates?
+
+Not currently. This is on our roadmap for future releases.
+
+You can list completed projects from Module 5 (Capstone) on your resume or portfolio.
+
+---
+
+## Technical Issues
+
+### ROS 2 installation failed. What should I do?
+
+**Common solutions**:
+
+1. **Check Ubuntu version**:
+   ```bash
+   lsb_release -a  # Should show Ubuntu 22.04
+   ```
+
+2. **Update package lists**:
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+
+3. **Re-add ROS 2 repository**:
+   ```bash
+   sudo apt install software-properties-common
+   sudo add-apt-repository universe
+   ```
+
+4. **Check available disk space**:
+   ```bash
+   df -h  # Need at least 20 GB free
+   ```
+
+See [Module 1, Chapter 2](/docs/module-1-ros2/week-1/chapter-2-setup) for detailed installation guide.
+
+### Gazebo crashes when I launch it
+
+**Common causes**:
+
+1. **Insufficient RAM**: Gazebo requires 4 GB+ RAM
+   ```bash
+   free -h  # Check available memory
+   ```
+
+2. **Graphics drivers**: Update to latest
+   ```bash
+   sudo ubuntu-drivers autoinstall
+   sudo reboot
+   ```
+
+3. **Conflicting ROS/Gazebo versions**: Ensure you're using Gazebo Classic 11 with ROS 2 Humble
+
+### Isaac Sim won't detect my GPU
+
+**Solutions**:
+
+1. **Check NVIDIA driver**:
+   ```bash
+   nvidia-smi  # Should show GPU and driver version
+   ```
+
+2. **Update driver** (need 525.60.11+):
+   ```bash
+   sudo ubuntu-drivers autoinstall
+   sudo reboot
+   ```
+
+3. **Verify CUDA compatibility**:
+   ```bash
+   nvcc --version  # Should show CUDA 11.8+
+   ```
+
+4. **Use cloud alternative** if local GPU unavailable (see [Prerequisites](/docs/prerequisites#️-cloud-options-no-gpu-required))
+
+### Code example not working
+
+**Troubleshooting steps**:
+
+1. **Check environment**:
+   ```bash
+   source /opt/ros/humble/setup.bash
+   echo $ROS_DISTRO  # Should show "humble"
+   ```
+
+2. **Verify dependencies installed**:
+   ```bash
+   rosdep install --from-paths . --ignore-src -y
+   ```
+
+3. **Check Python version**:
+   ```bash
+   python3 --version  # Should be 3.10+
+   ```
+
+4. **Review error message** and check "Common Errors" section in the chapter
+
+5. **Still stuck?** [Open a GitHub issue](https://github.com/hibasheikh/hackathon_book/issues) with:
+   - Chapter number
+   - Error message (full output)
+   - System info (`uname -a`, `python3 --version`, `ros2 doctor`)
+
+---
+
+## Contributing
+
+### Can I contribute to this textbook?
+
+**Yes!** Contributions are welcome:
+
+1. **Report issues**: [GitHub Issues](https://github.com/hibasheikh/hackathon_book/issues)
+2. **Fix typos**: Submit pull requests for corrections
+3. **Translate**: Help translate to additional languages
+4. **Add examples**: Contribute additional code examples or labs
+5. **Improve diagrams**: Create better visualizations
+
+See [CONTRIBUTING.md](https://github.com/hibasheikh/hackathon_book/blob/main/CONTRIBUTING.md) for guidelines.
+
+### I found a typo. How do I report it?
+
+Option 1: [Open an issue](https://github.com/hibasheikh/hackathon_book/issues/new) with the chapter and typo details.
+
+Option 2: Submit a pull request with the fix (faster!):
+```bash
+git clone https://github.com/hibasheikh/hackathon_book.git
+cd hackathon_book
+# Edit the file
+git add .
+git commit -m "Fix typo in Chapter X"
+git push origin fix-typo-chapter-x
+# Open PR on GitHub
+```
+
+### Can I use this textbook for teaching?
+
+**Absolutely!** This textbook is released under the MIT License, which permits:
+- ✅ Use in university courses
+- ✅ Use in bootcamps and training programs
+- ✅ Modification for specific curricula
+- ✅ Commercial use with attribution
+
+**Attribution**: Please credit the textbook and link to the repository.
+
+---
+
+## Future Features
+
+### When will the RAG chatbot be available?
+
+The RAG (Retrieval-Augmented Generation) chatbot is planned for **Phase 2** (after book content is complete).
+
+It will provide:
+- Instant Q&A based on textbook content
+- Code explanation and debugging help
+- Bilingual support (English + Urdu)
+
+**Target release**: Q2 2025
+
+### Will there be video tutorials?
+
+**Yes**, this is on the roadmap. Planned content:
+- Chapter overview videos
+- Lab walkthrough screenrecordings
+- Debugging sessions
+- Guest lectures from industry experts
+
+**Target release**: Q3 2025
+
+### Any plans for additional languages?
+
+Yes! After English and Urdu, we plan to add:
+- **Arabic** (Q3 2025)
+- **Hindi** (Q4 2025)
+- **Spanish** (2026)
+
+Community contributions for translations are welcome!
+
+---
+
+## Still Have Questions?
+
+If your question isn't answered here:
+
+1. **Check the [Resources](/docs/resources) page** for external documentation
+2. **Search the [Glossary](/docs/glossary)** for technical terms
+3. **Open a [GitHub Discussion](https://github.com/hibasheikh/hackathon_book/discussions)** for community help
+4. **Report bugs via [GitHub Issues](https://github.com/hibasheikh/hackathon_book/issues)**
+
+---
+
+**Happy learning! 🤖**
+
+[Back to Home](/) | [Start Learning](/docs/module-1-ros2/week-1/chapter-1-intro)

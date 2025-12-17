@@ -27,6 +27,20 @@ const config: Config = {
 
   onBrokenLinks: 'throw',
 
+  // Disable webpack persistent cache to prevent Windows/OneDrive file lock issues (ENOENT errors)
+  plugins: [
+    function webpackCacheFix() {
+      return {
+        name: 'webpack-cache-fix',
+        configureWebpack() {
+          return {
+            cache: false,
+          };
+        },
+      };
+    },
+  ],
+
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".

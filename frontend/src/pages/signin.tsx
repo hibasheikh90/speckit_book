@@ -1,12 +1,17 @@
+
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
-import { Container, Box, Typography, TextField, Button, Alert, Link } from '@mui/material';
+import { useAuth } from '../contexts/AuthContext';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import Link from '@docusaurus/Link';
+import './signin.css';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const auth = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,12 +19,9 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      // Dynamically import useAuth to ensure it's only used client-side
-      const { useAuth } = await import('../contexts/AuthContext');
-      const auth = useAuth();
       await auth.login(email, password);
-      // Use window.location for navigation to ensure it only runs on the client
-      if (typeof window !== 'undefined') {
+      // Use window.location for navigation
+      if (ExecutionEnvironment.canUseDOM) {
         window.location.href = '/';
       }
     } catch (err: any) {
@@ -31,60 +33,53 @@ function LoginPage() {
 
   return (
     <Layout title="Sign In" description="Sign in to access the Physical AI Textbook">
-      <Container component="main" maxWidth="xs" sx={{ py: 8 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-            {error && <Alert severity="error" sx={{ width: '100%', mb: 2 }}>{error}</Alert>}
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button
+      <div className="auth-container">
+        <div className="auth-box">
+          <h1 className="auth-title">Sign in</h1>
+          <form onSubmit={handleSubmit} className="auth-form">
+            {error && <div className="auth-error">{error}</div>}
+            <div className="auth-input-group">
+              <label htmlFor="email" className="auth-label">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="auth-input"
+                required
+                autoComplete="email"
+                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="auth-input-group">
+              <label htmlFor="password" className="auth-label">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="auth-input"
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <button
               type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              className="auth-button"
               disabled={loading}
             >
               {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <Link href="/signup" variant="body2">
-                {"Don't have an account? Sign Up"}
+            </button>
+            <div className="auth-link">
+              <Link to="/signup">
+                Don't have an account? Sign Up
               </Link>
-            </Box>
-          </Box>
-        </Box>
-      </Container>
+            </div>
+          </form>
+        </div>
+      </div>
     </Layout>
   );
 }

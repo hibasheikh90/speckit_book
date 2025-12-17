@@ -1,0 +1,934 @@
+---
+id: module-5-assessment
+title: "Module 5 Assessment: Autonomous Humanoid System Capstone"
+sidebar_label: "Module 5 Assessment"
+sidebar_position: 99
+description: Comprehensive capstone assessment covering system integration, autonomous humanoid robotics, testing, validation, and deployment
+keywords: [capstone assessment, humanoid robot, system integration, ros2, isaac sim, vla, deployment, evaluation]
+---
+
+# Module 5 Assessment: Autonomous Humanoid System Capstone
+
+**Total Time**: 120 minutes (60 minutes quiz + 60 minutes capstone project)
+
+## Assessment Structure
+
+This assessment consists of two parts:
+
+1. **Knowledge Quiz** (40 points) - 30 questions testing system integration and deployment
+2. **Capstone Project** (60 points) - Build complete integrated autonomous humanoid system
+
+**Passing Score**: 70/100 points
+
+---
+
+## Part 1: Knowledge Quiz (40 points)
+
+### Section A: Multiple Choice (20 questions × 1 point = 20 points)
+
+#### Question 1
+**What is the primary challenge of integrating ROS 2, Isaac Sim, and VLA into a single humanoid system?**
+
+- A) Cost constraints
+- B) Coordinating perception, planning, and control across 30+ DOF with real-time constraints
+- C) Installation complexity
+- D) Documentation availability
+
+<details>
+<summary>Answer</summary>
+**B) Coordinating perception, planning, and control across 30+ DOF with real-time constraints**
+
+Integration requires synchronized communication between vision (30Hz), VLA inference (10Hz), and motor control (50Hz+).
+</details>
+
+---
+
+#### Question 2
+**Which ROS 2 component enables Isaac Sim to communicate with robot software?**
+
+- A) ROS 2 Control
+- B) ROS 2 Bridge
+- C) ROS 2 Lifecycle
+- D) ROS 2 Actions
+
+<details>
+<summary>Answer</summary>
+**B) ROS 2 Bridge**
+
+The ROS 2 Bridge publishes sensor data from Isaac Sim and subscribes to control commands.
+</details>
+
+---
+
+#### Question 3
+**What is the recommended control loop frequency for high-level VLA-based humanoid control?**
+
+- A) 1 Hz
+- B) 10-50 Hz
+- C) 500 Hz
+- D) 1000 Hz
+
+<details>
+<summary>Answer</summary>
+**B) 10-50 Hz**
+
+High-level VLA control runs at 10-50 Hz, while low-level motor control runs at 500-1000 Hz.
+</details>
+
+---
+
+#### Question 4
+**What is the purpose of hierarchical control in humanoid robots?**
+
+- A) Reduce power consumption
+- B) Decompose complex whole-body control into manageable subtasks (body → arms → hands)
+- C) Encrypt commands
+- D) Simplify URDF files
+
+<details>
+<summary>Answer</summary>
+**B) Decompose complex whole-body control into manageable subtasks (body → arms → hands)**
+
+Hierarchical control reduces 50-DOF action space complexity by organizing into body/arms/hands layers.
+</details>
+
+---
+
+#### Question 5
+**Which perception pipeline component detects objects in camera images?**
+
+- A) State estimator
+- B) Object detector (YOLO)
+- C) Depth estimator
+- D) IMU sensor
+
+<details>
+<summary>Answer</summary>
+**B) Object detector (YOLO)**
+
+YOLO (You Only Look Once) provides real-time object detection with bounding boxes and class labels.
+</details>
+
+---
+
+#### Question 6
+**What is the Center of Mass (CoM) constraint in humanoid balance control?**
+
+- A) Total robot mass limit
+- B) CoM must stay within the support polygon (feet footprint)
+- C) Mass distribution ratio
+- D) Gripper payload limit
+
+<details>
+<summary>Answer</summary>
+**B) CoM must stay within the support polygon (feet footprint)**
+
+For stability, the vertical projection of CoM must fall inside the support polygon.
+</details>
+
+---
+
+#### Question 7
+**What is the primary purpose of the perception layer in the system architecture?**
+
+- A) Control motors
+- B) Process sensor data to understand environment state
+- C) Generate motion plans
+- D) Execute tasks
+
+<details>
+<summary>Answer</summary>
+**B) Process sensor data to understand environment state**
+
+Perception fuses cameras, depth sensors, and IMU to build a scene representation.
+</details>
+
+---
+
+#### Question 8
+**Which planning component generates collision-free arm trajectories?**
+
+- A) Nav2
+- B) VLA planner
+- C) MoveIt 2
+- D) Locomotion controller
+
+<details>
+<summary>Answer</summary>
+**C) MoveIt 2**
+
+MoveIt 2 uses RRT-Connect and OMPL algorithms for collision-free motion planning.
+</details>
+
+---
+
+#### Question 9
+**What is TensorRT used for in humanoid robot deployment?**
+
+- A) Simulation physics
+- B) Optimizing neural network inference for real-time performance
+- C) ROS 2 communication
+- D) URDF parsing
+
+<details>
+<summary>Answer</summary>
+**B) Optimizing neural network inference for real-time performance**
+
+TensorRT optimizes PyTorch/ONNX models for fast GPU inference (2-10x speedup).
+</details>
+
+---
+
+#### Question 10
+**What is the recommended onboard compute for autonomous humanoid robots?**
+
+- A) Raspberry Pi 4
+- B) NVIDIA Jetson AGX Orin
+- C) Intel NUC
+- D) Arduino Mega
+
+<details>
+<summary>Answer</summary>
+**B) NVIDIA Jetson AGX Orin**
+
+Jetson Orin provides 275 TOPS AI performance, sufficient for VLA inference and perception.
+</details>
+
+---
+
+#### Question 11
+**What does a functional requirement specify?**
+
+- A) System performance metrics
+- B) What the system must do (capabilities and behaviors)
+- C) Hardware specifications
+- D) Code quality standards
+
+<details>
+<summary>Answer</summary>
+**B) What the system must do (capabilities and behaviors)**
+
+Functional requirements define system capabilities (e.g., "System SHALL accept natural language commands").
+</details>
+
+---
+
+#### Question 12
+**What is the purpose of Nav2 in humanoid navigation?**
+
+- A) Arm motion planning
+- B) Compute safe paths and velocity commands for locomotion
+- C) Camera calibration
+- D) VLA training
+
+<details>
+<summary>Answer</summary>
+**B) Compute safe paths and velocity commands for locomotion**
+
+Nav2 uses A* global planning and DWB local planning for obstacle avoidance.
+</details>
+
+---
+
+#### Question 13
+**What is an Extended Kalman Filter (EKF) used for in state estimation?**
+
+- A) Object detection
+- B) Fusing IMU and encoder data to estimate robot pose and velocity
+- C) Image segmentation
+- D) Action prediction
+
+<details>
+<summary>Answer</summary>
+**B) Fusing IMU and encoder data to estimate robot pose and velocity**
+
+EKF combines noisy sensor measurements (IMU accel/gyro + joint encoders) for accurate state estimation.
+</details>
+
+---
+
+#### Question 14
+**What is the main advantage of testing in Isaac Sim before real robot deployment?**
+
+- A) Lower cost
+- B) Safe experimentation, easy reset, and rapid iteration
+- C) Better graphics
+- D) Faster execution
+
+<details>
+<summary>Answer</summary>
+**B) Safe experimentation, easy reset, and rapid iteration**
+
+Simulation allows unlimited trials without risk of robot damage or safety incidents.
+</details>
+
+---
+
+#### Question 15
+**Which layer in the system architecture contains the VLA policy?**
+
+- A) Hardware layer
+- B) Control layer
+- C) Planning layer
+- D) Perception layer
+
+<details>
+<summary>Answer</summary>
+**C) Planning layer**
+
+VLA provides high-level task planning (decomposing language commands into subtasks).
+</details>
+
+---
+
+#### Question 16
+**What is the purpose of a safety monitor node?**
+
+- A) Encrypt communications
+- B) Detect unsafe states (falls, collisions) and trigger emergency stop
+- C) Optimize performance
+- D) Log data
+
+<details>
+<summary>Answer</summary>
+**B) Detect unsafe states (falls, collisions) and trigger emergency stop**
+
+Safety monitors continuously check IMU, joint limits, and CoM to prevent dangerous conditions.
+</details>
+
+---
+
+#### Question 17
+**True or False: Non-functional requirements specify performance, reliability, and scalability.**
+
+<details>
+<summary>Answer</summary>
+**True**
+
+Non-functional requirements (NFRs) define "how well" the system works (e.g., latency &lt;100ms, MTBF >2 hours).
+</details>
+
+---
+
+#### Question 18
+**What is the purpose of multi-camera fusion in humanoid perception?**
+
+- A) Reduce bandwidth
+- B) Combine head and wrist camera views for complete scene understanding
+- C) Compress images
+- D) Simplify wiring
+
+<details>
+<summary>Answer</summary>
+**B) Combine head and wrist camera views for complete scene understanding**
+
+Head cameras provide scene context, wrist cameras enable precise manipulation feedback.
+</details>
+
+---
+
+#### Question 19
+**Which metric measures the accuracy of object detection models?**
+
+- A) F1 score
+- B) Mean Average Precision (mAP)
+- C) Root Mean Square Error (RMSE)
+- D) Intersection over Union (IoU)
+
+<details>
+<summary>Answer</summary>
+**B) Mean Average Precision (mAP)**
+
+mAP averages precision across all object classes and IoU thresholds (common target: >85% mAP).
+</details>
+
+---
+
+#### Question 20
+**What is the benefit of incremental development with continuous testing?**
+
+- A) Faster final deployment
+- B) Reduces risk, enables early bug detection, and simplifies debugging
+- C) Requires less documentation
+- D) Uses less memory
+
+<details>
+<summary>Answer</summary>
+**B) Reduces risk, enables early bug detection, and simplifies debugging**
+
+Testing each component (perception → VLA → control) before integration prevents cascading failures.
+</details>
+
+---
+
+### Section B: Short Answer (10 questions × 2 points = 20 points)
+
+#### Question 21
+**Describe the five layers of the autonomous humanoid system architecture and their responsibilities. (5-6 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+The five layers are: (1) **User Interface Layer** - accepts natural language commands and displays monitoring dashboard (RViz2). (2) **Planning Layer** - contains VLA task planner, MoveIt 2 motion planner, and Nav2 navigation planner for high-level decision making. (3) **Perception Layer** - processes multi-camera images, runs object detection (YOLO), depth estimation, and state estimation (EKF) to build scene representation. (4) **Control Layer** - implements whole-body controller, arm controllers, hand controllers, and locomotion controller for 30+ DOF coordination. (5) **Hardware Layer** - the physical humanoid robot with sensors (cameras, IMU, encoders) and actuators (motors), plus onboard compute (Jetson Orin).
+</details>
+
+---
+
+#### Question 22
+**Explain how the ROS 2 Bridge integrates Isaac Sim with robot software. (3-4 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+The ROS 2 Bridge enables bidirectional communication between Isaac Sim and ROS 2 nodes. It publishes simulated sensor data (camera images, joint states, IMU readings, clock) as ROS 2 topics that software nodes can subscribe to. It also subscribes to control command topics (joint position commands, velocity commands) and applies them to the simulated robot in Isaac Sim. This allows the entire robot software stack to run identically in simulation and on real hardware, enabling safe testing before deployment.
+</details>
+
+---
+
+#### Question 23
+**What are the three types of system requirements? Provide one example of each for a humanoid robot. (4-5 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+**Functional Requirements (FR)** - what the system must do. Example: "System SHALL grasp objects weighing 0.1-5 kg with &lt;3cm placement error." **Non-Functional Requirements (NFR)** - how well the system performs. Example: "VLA inference latency SHALL be &lt;100ms for 10Hz control." **Safety Requirements (SR)** - constraints preventing harm. Example: "System SHALL trigger emergency stop within 100ms if fall is detected by IMU." Together, these requirements define complete system specifications for design, implementation, and testing.
+</details>
+
+---
+
+#### Question 24
+**Describe the phased development approach for the capstone project. Why is this better than building everything at once? (4-5 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+The phased approach develops the system incrementally over 2 weeks: Week 15 covers system architecture design, perception pipeline integration, and VLA integration. Week 16 covers whole-body control and system testing/validation. Each phase has clear deliverables and success criteria that must pass before proceeding. This is superior to monolithic development because: (1) bugs are caught early when they're easier to fix, (2) components can be tested in isolation before integration, (3) progress is measurable with concrete milestones, and (4) risk is reduced by validating critical components (perception, VLA) before control.
+</details>
+
+---
+
+#### Question 25
+**What is whole-body control and why is it necessary for humanoid manipulation? (3-4 sentences)**
+
+<details>
+<summary>Sample Answer</summary>
+Whole-body control coordinates all 30+ degrees of freedom (legs, torso, arms, hands) simultaneously to achieve manipulation goals while maintaining balance. Unlike fixed-base robot arms, humanoids must adjust their torso and leg positions during arm motions to keep the Center of Mass within the support polygon. The controller implements a hierarchy: body-level control maintains balance and posture, arm-level control reaches targets, and hand-level control executes grasps. Without whole-body coordination, humanoids would fall when reaching for objects.
+</details>
+
+---
+
+#### Question 26
+**List four key success criteria for the capstone project and explain why each is important.**
+
+<details>
+<summary>Sample Answer</summary>
+1. **Task success rate >70%** - Validates that the system reliably performs its intended function (language-commanded manipulation).
+2. **Control loop frequency >10 Hz** - Ensures responsive robot control and prevents jerky motions or instability.
+3. **No safety violations** - Critical for deployment readiness; robot must never fall, collide, or exceed joint limits.
+4. **VLA inference latency &lt;100ms** - Necessary to maintain 10Hz control rate with time for perception and motor control.
+These criteria balance functional capability, performance, safety, and real-time operation.
+</details>
+
+---
+
+#### Question 27
+**Explain the difference between MoveIt 2 and Nav2 in robot planning. When would you use each?**
+
+<details>
+<summary>Sample Answer</summary>
+**MoveIt 2** is for manipulator motion planning - it generates collision-free trajectories for robot arms in task space (Cartesian coordinates) or joint space, considering obstacles and self-collision. Use MoveIt 2 when planning arm reaching motions, pick-and-place tasks, or dexterous manipulation. **Nav2** is for mobile robot navigation - it computes safe paths through 2D environments and generates velocity commands for the base, handling dynamic obstacles. Use Nav2 when planning locomotion (walking to target locations) for the humanoid's mobile base. Often both are used together: Nav2 gets the humanoid to the workspace, MoveIt 2 plans the manipulation.
+</details>
+
+---
+
+#### Question 28
+**What is the purpose of system integration testing? List 3 types of integration tests for the capstone.**
+
+<details>
+<summary>Sample Answer</summary>
+System integration testing validates that all components work correctly together as a complete system, catching interface bugs and timing issues not visible in unit tests. Three integration tests: **(1) Perception-VLA integration test** - verify camera images → YOLO detections → VLA scene understanding produces correct task decomposition. **(2) VLA-Control integration test** - verify VLA action outputs → controller joint commands execute without collisions or instability. **(3) End-to-end task test** - full pipeline from language command → perception → planning → control → task completion, measuring overall success rate and latency.
+</details>
+
+---
+
+#### Question 29
+**Describe three safety requirements for autonomous humanoid robots operating in human environments.**
+
+<details>
+<summary>Sample Answer</summary>
+1. **Fall Detection and Recovery (SR-1)**: Monitor IMU for abnormal accelerations (>2g) indicating loss of balance. Trigger emergency stop within 100ms, retracting arms to protective position and cutting motor power.
+2. **Collision Avoidance (SR-2)**: Maintain minimum 20cm safety margin from obstacles (walls, furniture, humans) using costmap from depth sensors. Reduce arm velocity to &lt;0.1 m/s when humans detected within 1m radius.
+3. **Joint Protection (SR-3)**: Enforce software joint limits with 5° safety margin from hardware limits. Monitor motor temperatures and throttle to 50% torque if exceeding 70°C to prevent overheating damage.
+</details>
+
+---
+
+#### Question 30
+**What is the role of performance profiling in system validation? What metrics should be measured?**
+
+<details>
+<summary>Sample Answer</summary>
+Performance profiling measures system resource usage and timing to validate that non-functional requirements are met and identify bottlenecks. Key metrics: **(1) Latency** - VLA inference time, perception pipeline latency, end-to-end command-to-action time. **(2) Throughput** - control loop frequency (Hz), camera frame rate, message publication rates. **(3) Resource usage** - CPU utilization per node, GPU memory consumption, RAM usage, network bandwidth. **(4) Real-time constraints** - worst-case execution time, deadline misses, jitter in control loop. These metrics ensure the system meets &lt;100ms latency targets and >10Hz control frequency for safe real-time operation.
+</details>
+
+---
+
+## Part 2: Capstone Project (60 points)
+
+### Project: Autonomous Warehouse Assistant Humanoid
+
+Build a complete autonomous humanoid robot system that navigates to shelves, manipulates objects, and responds to natural language commands in a warehouse environment.
+
+**Time**: 60 minutes (this is a design and partial implementation assessment)
+
+---
+
+### System Specification
+
+**Scenario**: Warehouse assistant robot receives commands like:
+- "Bring me the blue box from shelf A"
+- "Place all red items on the sorting table"
+- "Organize the tools on the workbench"
+
+**Robot**: Simulated humanoid in Isaac Sim (Unitree G1 or similar)
+- 30 DOF (legs, torso, arms, hands)
+- 3 cameras (head, left wrist, right wrist)
+- IMU for balance
+- Parallel grippers (1-DOF each hand)
+
+**Environment**: Warehouse with 3 shelves, objects of varying colors/shapes, obstacles
+
+---
+
+### Project Requirements
+
+#### Phase 1: System Architecture Design (15 points)
+
+**Tasks**:
+1. Create complete system architecture diagram showing:
+   - All ROS 2 nodes (minimum 8 nodes required)
+   - Topics, services, actions connecting nodes
+   - External dependencies (Isaac Sim, TensorRT models)
+   - Data flow from command input → task execution
+
+2. Define ROS 2 node architecture:
+   ```
+   Required Nodes:
+   - vision_encoder_node (CLIP)
+   - language_encoder_node (T5)
+   - object_detector_node (YOLO)
+   - state_estimator_node (EKF)
+   - vla_planner_node (task decomposition)
+   - motion_planner_node (MoveIt 2 wrapper)
+   - whole_body_controller_node
+   - safety_monitor_node
+   ```
+
+3. Specify topic/service interfaces:
+   - Camera topics: `/head_camera/image_raw`, `/left_wrist_camera/image_raw`, `/right_wrist_camera/image_raw`
+   - Command topic: `/task/command` (String)
+   - Action topics: `/left_arm/action`, `/right_arm/action`, `/body/action`
+   - Safety service: `/emergency_stop` (Trigger)
+   - State topic: `/robot/state` (JointState + IMU)
+
+**Deliverables**:
+- Architecture diagram (Mermaid or draw.io)
+- Node interface specifications (topics/services/actions)
+- Data flow diagram
+
+**Evaluation**:
+- [5 pts] Complete architecture with all required nodes
+- [5 pts] Correct topic/service/action interfaces
+- [5 pts] Clear data flow and dependencies
+
+---
+
+#### Phase 2: Perception Pipeline Implementation (15 points)
+
+**Tasks**:
+1. Implement `object_detector_node.py`:
+   - Subscribe to `/head_camera/image_raw`
+   - Load YOLOv8 model (pre-trained on COCO)
+   - Detect objects: boxes, shelves, obstacles
+   - Publish detections to `/perception/detections` (custom message with bounding boxes, class, confidence)
+   - Run at 20 Hz
+
+2. Implement `vision_encoder_node.py`:
+   - Subscribe to multi-camera topics (3 cameras)
+   - Fuse images into single representation
+   - Encode with CLIP ViT-B/32
+   - Publish to `/perception/vision_embedding`
+
+3. Implement `state_estimator_node.py`:
+   - Subscribe to `/imu/data` and `/joint_states`
+   - Implement simple EKF for pose estimation
+   - Publish estimated CoM position
+   - Publish balance state (stable/unstable)
+
+**Deliverables**:
+- 3 Python node files with complete implementations
+- Launch file for perception stack
+- Test results showing detection accuracy and runtime
+
+**Evaluation**:
+- [5 pts] Object detector running with >80% mAP
+- [5 pts] Vision encoder fusing multi-camera input
+- [5 pts] State estimator publishing CoM and balance state
+
+---
+
+#### Phase 3: VLA Integration and Planning (15 points)
+
+**Tasks**:
+1. Implement `vla_planner_node.py`:
+   - Subscribe to vision embeddings + language command
+   - Load simplified VLA policy (can use rule-based for time constraint)
+   - Decompose task into subtasks:
+     ```
+     "Bring blue box" → [navigate_to_shelf, detect_blue_box, grasp, navigate_to_person, release]
+     ```
+   - Publish subtask sequence to `/planner/task_sequence`
+
+2. Implement `motion_planner_node.py`:
+   - Subscribe to `/planner/task_sequence`
+   - For each subtask, generate motion plan:
+     - `grasp` → compute IK for arm reaching
+     - `navigate` → call Nav2 for path
+   - Publish trajectories to `/motion/trajectory`
+
+3. Test command understanding:
+   - Test 5 commands:
+     1. "Pick up the red cube"
+     2. "Place the box on shelf B"
+     3. "Bring me the tool"
+     4. "Move to the sorting table"
+     5. "Organize items by color"
+
+**Deliverables**:
+- VLA planner node
+- Motion planner node
+- Test report showing task decomposition for 5 commands
+
+**Evaluation**:
+- [6 pts] VLA planner correctly decomposes tasks
+- [5 pts] Motion planner generates valid trajectories
+- [4 pts] Successfully handles 5 test commands
+
+---
+
+#### Phase 4: Whole-Body Control (10 points)
+
+**Tasks**:
+1. Implement `whole_body_controller_node.py`:
+   - Subscribe to `/motion/trajectory`
+   - Implement hierarchical control:
+     - Body controller: maintain balance (adjust torso/legs)
+     - Arm controller: execute reaching motions
+     - Hand controller: gripper open/close
+   - Check balance constraint before each motion
+   - Publish joint commands to `/joint_position_controller/commands`
+
+2. Implement `safety_monitor_node.py`:
+   - Subscribe to `/imu/data`, `/joint_states`, `/perception/detections`
+   - Monitor:
+     - Fall detection (IMU z-accel < -9.8 m/s²)
+     - Joint limit violations
+     - Obstacle proximity (&lt;20cm)
+   - Call `/emergency_stop` service if unsafe
+
+**Deliverables**:
+- Whole-body controller implementation
+- Safety monitor implementation
+- Test showing balance maintained during arm motions
+
+**Evaluation**:
+- [5 pts] Hierarchical control implemented correctly
+- [3 pts] Balance constraint enforced
+- [2 pts] Safety monitor detects unsafe states
+
+---
+
+#### Phase 5: System Testing and Validation (10 points)
+
+**Tasks**:
+1. Create end-to-end test suite:
+   - Test Scenario 1: "Pick red cube" - success if grasped
+   - Test Scenario 2: "Place on shelf" - success if placed within 5cm
+   - Test Scenario 3: "Navigate to table" - success if reached within 10cm
+   - Test Scenario 4: Safety test - verify emergency stop on fall
+   - Test Scenario 5: Multi-step task - "Bring blue box from shelf A"
+
+2. Measure performance metrics:
+   - Control loop frequency (target >10 Hz)
+   - VLA inference latency (target &lt;100ms)
+   - Perception latency (target &lt;50ms)
+   - Task success rate (target >70%)
+
+3. Create demo video (2 minutes):
+   - Show robot responding to 3 language commands
+   - Demonstrate successful manipulation
+   - Show safety monitor preventing unsafe action
+
+**Deliverables**:
+- Test suite with 5 scenarios
+- Performance metrics report
+- Demo video (uploaded to YouTube/Vimeo)
+
+**Evaluation**:
+- [4 pts] All 5 test scenarios implemented
+- [3 pts] Performance metrics meet targets
+- [3 pts] Demo video shows system working
+
+---
+
+### Launch File and Configuration (5 points)
+
+**File**: `launch/warehouse_humanoid_launch.py`
+
+**Requirements**:
+- Launch all 8+ nodes in correct order
+- Load parameters from `config/system_params.yaml`
+- Launch Isaac Sim (or connect to running instance)
+- Enable ROS 2 Bridge
+- Set up namespaces for organization
+
+**Evaluation**:
+- [2 pts] All nodes launch successfully
+- [2 pts] Parameters configured correctly
+- [1 pt] Clean launch sequence with error handling
+
+---
+
+### Testing Sequence
+
+```bash
+# Step 1: Start Isaac Sim with warehouse environment
+# (Assume pre-configured USD scene with shelves, objects)
+
+# Step 2: Launch complete system
+ros2 launch warehouse_humanoid warehouse_humanoid_launch.py
+
+# Step 3: Verify all nodes running
+ros2 node list
+# Should show 8+ nodes
+
+# Step 4: Test perception
+ros2 topic echo /perception/detections
+# Should see detected objects
+
+# Step 5: Send command
+ros2 topic pub /task/command std_msgs/msg/String \
+    "{data: 'pick up the red cube'}"
+
+# Step 6: Monitor execution
+# Watch in Isaac Sim viewer:
+# - Robot navigates to shelf
+# - Arm reaches for red cube
+# - Gripper closes
+# - Robot maintains balance
+
+# Step 7: Test safety
+# Manually tilt robot in Isaac Sim
+# Verify emergency stop triggers
+
+# Step 8: Performance profiling
+ros2 run warehouse_humanoid profile_system.py
+# Outputs latency and frequency metrics
+```
+
+---
+
+### Submission Requirements
+
+Submit complete package including:
+
+1. **Source Code**:
+   - All 8+ ROS 2 node implementations (.py files)
+   - Launch files
+   - Configuration files (YAML)
+   - Test suite scripts
+
+2. **Documentation**:
+   - `README.md` with installation and usage instructions
+   - `ARCHITECTURE.md` with system design details
+   - `TESTING.md` with test results and metrics
+   - Demo video link (2-min, unlisted YouTube/Vimeo)
+
+3. **Design Documents**:
+   - System architecture diagram (PNG/PDF)
+   - Node interface specifications
+   - Requirements document (functional, non-functional, safety)
+
+4. **Test Results**:
+   - 5 test scenarios with pass/fail results
+   - Performance metrics table
+   - Screenshots from Isaac Sim showing task execution
+
+---
+
+### Grading Rubric
+
+| Component | Points | Criteria |
+|-----------|--------|----------|
+| **Architecture Design** | 15 | Complete diagram, correct interfaces, clear data flow |
+| **Perception Pipeline** | 15 | Object detection, vision encoding, state estimation |
+| **VLA Planning** | 15 | Task decomposition, motion planning, command handling |
+| **Whole-Body Control** | 10 | Hierarchical control, balance constraints, safety |
+| **System Testing** | 10 | Test scenarios, performance metrics, demo video |
+| **Launch & Config** | 5 | Complete launch system, parameter management |
+| **Code Quality** | 10 | Comments, modularity, error handling, style |
+| **Documentation** | 10 | README, architecture docs, testing reports |
+| **Innovation** | 5 | Creative solutions, optimizations, extra features |
+| **Integration** | 5 | All modules work together seamlessly |
+| **TOTAL** | **100** | (scaled to 60 points) |
+
+---
+
+## Assessment Completion
+
+### Self-Assessment Checklist
+
+Before submitting, verify:
+
+#### Architecture & Design
+- ✅ Complete system architecture diagram with all components
+- ✅ All 8+ ROS 2 nodes specified with clear interfaces
+- ✅ Requirements document covers functional, non-functional, safety
+- ✅ Data flow clearly shows integration points
+
+#### Implementation
+- ✅ Perception pipeline detects objects and estimates state
+- ✅ VLA planner decomposes language commands into subtasks
+- ✅ Motion planner generates collision-free trajectories
+- ✅ Whole-body controller maintains balance during manipulation
+- ✅ Safety monitor prevents falls and collisions
+
+#### Testing & Validation
+- ✅ 5 test scenarios implemented and passing
+- ✅ Performance metrics meet targets (>10 Hz, &lt;100ms latency)
+- ✅ Demo video shows 3+ successful task completions
+- ✅ Safety systems validated (emergency stop working)
+
+#### Documentation
+- ✅ README with clear installation and usage instructions
+- ✅ Architecture documentation explains design decisions
+- ✅ Test report shows metrics and results
+- ✅ Code well-commented and modular
+
+#### Integration
+- ✅ Launch file starts entire system reliably
+- ✅ All nodes communicate correctly via ROS 2
+- ✅ Isaac Sim integrates with software stack
+- ✅ End-to-end tasks complete successfully
+
+---
+
+## Capstone Success Criteria
+
+**Minimum Viable System** (70% to pass):
+- ✅ Responds to at least 3 language commands
+- ✅ Perception detects objects with >70% accuracy
+- ✅ Robot executes manipulation without falling
+- ✅ Control loop runs at >8 Hz
+- ✅ Safety monitor functional
+
+**Excellent System** (90%+ for excellence):
+- ✅ Responds to 5+ complex multi-step commands
+- ✅ Perception >85% mAP, &lt;5cm object pose error
+- ✅ Completes bimanual coordination tasks
+- ✅ Control loop >15 Hz, VLA inference &lt;80ms
+- ✅ Graceful failure recovery (e.g., re-grasp on slip)
+- ✅ Real robot deployment (bonus)
+
+---
+
+## What's Next?
+
+Congratulations on completing the Humanoid Robotics Textbook! 🎉
+
+You've mastered the complete Physical AI stack:
+- ✅ **Module 1**: ROS 2 Fundamentals
+- ✅ **Module 2**: Digital Twin Simulation
+- ✅ **Module 3**: NVIDIA Isaac Platform
+- ✅ **Module 4**: Vision-Language-Action Models
+- ✅ **Module 5**: Autonomous Humanoid Systems
+
+### Career Pathways
+
+**Research**: Pursue graduate studies in robotics AI, publishing on VLA architectures, sim-to-real transfer, or human-robot interaction.
+
+**Industry**: Join robotics companies (1X, Figure, Tesla, Boston Dynamics) as robotics engineer, ML engineer, or systems integrator.
+
+**Entrepreneurship**: Build your own humanoid robotics startup leveraging open-source tools (ROS 2, Isaac Sim, OpenVLA).
+
+**Open Source**: Contribute to ROS 2, Isaac Sim, MoveIt 2, or OpenVLA projects to advance the ecosystem.
+
+### Recommended Next Steps
+
+1. **Deploy to Real Hardware**: If you have access to a real humanoid platform (Unitree G1, custom build), deploy your capstone system and iterate on real-world performance.
+
+2. **Advanced Topics**:
+   - Multi-robot coordination (fleet of humanoids)
+   - Long-horizon task planning with LLMs
+   - Learning from human video (pre-training)
+   - Tactile sensing and contact-rich manipulation
+
+3. **Competitions**: Participate in RoboCup, DARPA Robotics Challenge, or ANA Avatar XPRIZE to benchmark your system.
+
+4. **Research Papers**: Read latest preprints on arXiv (cs.RO, cs.AI) to stay current with Physical AI breakthroughs.
+
+5. **Community**: Join ROS 2 Discourse, Isaac Sim forums, Humanoid Robotics Discord communities to collaborate and share learnings.
+
+---
+
+## Additional Resources
+
+### System Integration
+- **ROS 2 System Design**: [design.ros2.org](https://design.ros2.org/)
+- **MoveIt 2 Documentation**: [moveit.picknik.ai/humble](https://moveit.picknik.ai/humble/)
+- **Nav2 Tutorials**: [navigation.ros.org](https://navigation.ros.org/)
+
+### Testing & Validation
+- **Robot System Testing**: [classic.gazebosim.org/tutorials?tut=ros_integration_testing](http://classic.gazebosim.org/tutorials?tut=ros_integration_testing)
+- **Performance Profiling**: [ros2/design - QoS](https://design.ros2.org/articles/qos.html)
+
+### Deployment
+- **TensorRT Optimization**: [docs.nvidia.com/deeplearning/tensorrt](https://docs.nvidia.com/deeplearning/tensorrt/)
+- **Jetson Orin Setup**: [developer.nvidia.com/embedded/jetson-orin](https://developer.nvidia.com/embedded/jetson-orin)
+
+### Research Papers
+- **RT-1 (Robotics Transformer)**: [arxiv.org/abs/2212.06817](https://arxiv.org/abs/2212.06817)
+- **RT-2 (VLM as Policy)**: [arxiv.org/abs/2307.15818](https://arxiv.org/abs/2307.15818)
+- **OpenVLA**: [arxiv.org/abs/2406.09246](https://arxiv.org/abs/2406.09246)
+- **Humanoid Whole-Body Control**: [arxiv.org/abs/2103.01955](https://arxiv.org/abs/2103.01955)
+
+---
+
+## Course Completion Certificate
+
+**Congratulations!** You have completed:
+
+**"From ROS 2 to Humanoid Robots: A Comprehensive Physical AI Textbook"**
+
+**Skills Acquired**:
+- ROS 2 architecture, communication patterns, and system integration
+- Digital twin simulation with Gazebo, Unity, and Isaac Sim
+- NVIDIA Isaac platform for RL, synthetic data, and perception
+- Vision-Language-Action models for language-conditioned control
+- Complete autonomous humanoid system design and deployment
+
+**Recommended Badge**: Share your completion on LinkedIn with:
+```
+I completed "From ROS 2 to Humanoid Robots" - a 16-week comprehensive Physical AI course covering:
+✅ ROS 2 Fundamentals
+✅ Digital Twin Simulation
+✅ NVIDIA Isaac Platform
+✅ Vision-Language-Action Models
+✅ Autonomous Humanoid Systems
+
+Capstone: Built an autonomous warehouse assistant humanoid with language-commanded manipulation.
+
+#ROS2 #Robotics #PhysicalAI #MachineLearning #HumanoidRobotics
+```
+
+---
+
+**Module 5 Progress**: 4/4 chapters complete ✅ | **Course Complete!** 🎓
+
+[Return to Course Home](/docs/intro) | [View All Modules](/docs/intro#-5-comprehensive-modules)
