@@ -70,18 +70,25 @@ export class ChatService {
       throw new Error('Rate limit exceeded. Please wait before sending another message.');
     }
 
+    // Get auth token from localStorage
+    const token = localStorage.getItem('authToken');
+
     // For now, use fetch instead of SSE for simplicity
     // In a real implementation, we'd use SSE for streaming
     const response = await fetch(`${BACKEND_URL}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
       },
       body: JSON.stringify({ message: trimmedMessage })
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication required. Please log in to continue.');
+      }
       throw new Error(`Backend error: ${response.status}`);
     }
 
@@ -105,17 +112,24 @@ export class ChatService {
       throw new Error('Rate limit exceeded. Please wait before sending another message.');
     }
 
+    // Get auth token from localStorage
+    const token = localStorage.getItem('authToken');
+
     // Use fetch with streaming response
     const response = await fetch(`${BACKEND_URL}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'text/event-stream'
+        'Accept': 'text/event-stream',
+        ...(token && { 'Authorization': `Bearer ${token}` })
       },
       body: JSON.stringify({ message: trimmedMessage })
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Authentication required. Please log in to continue.');
+      }
       throw new Error(`Backend error: ${response.status}`);
     }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import OriginalLayout from '@theme-original/Layout';
 import { ChatWidget } from '../components/ChatWidget/ChatWidget';
+import { AuthProvider } from '../contexts/AuthContext';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -8,11 +9,11 @@ type LayoutProps = {
 
 export default function Layout(props: LayoutProps) {
   return (
-    <>
+    <AuthProvider>
       <OriginalLayout {...props}>
         {props.children}
         <ChatWidget />
       </OriginalLayout>
-    </>
+    </AuthProvider>
   );
 }

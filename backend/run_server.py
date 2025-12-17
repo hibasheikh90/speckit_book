@@ -37,10 +37,10 @@ def run_server():
         print("Please set it before running the server in production.")
         os.environ.setdefault('GEMINI_API_KEY', 'dummy-key-for-development')
 
-    from backend.main import app
+    from src.backend.main import app
     import uvicorn
 
-    from backend.config import settings
+    from src.backend.config import settings
     print(f"Starting Educational AI Tutor Service on {settings.host}:{settings.port}")
     print(f"Using model: {settings.gemini_model}")
     print(f"Rate limit: {settings.rate_limit_per_minute} requests per minute")
