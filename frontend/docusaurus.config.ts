@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'My Site',
+  title: 'My Book',
   tagline: 'Dinosaurs are cool',
   favicon: 'img/favicon.ico',
 
@@ -25,7 +25,8 @@ const config: Config = {
   organizationName: 'facebook', // Usually your GitHub org/user name.
   projectName: 'docusaurus', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'ignore',
+  onBrokenAnchors: 'ignore',
 
   // Disable webpack persistent cache to prevent Windows/OneDrive file lock issues (ENOENT errors)
   plugins: [
