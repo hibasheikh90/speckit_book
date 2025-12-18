@@ -27,6 +27,12 @@ from pathlib import Path
 def run_server():
     """Run the backend server."""
     import os
+    from dotenv import load_dotenv
+
+    # Load environment variables from .env file
+    env_path = Path(__file__).parent / ".env"
+    load_dotenv(env_path)
+
     # Add src to path for imports
     src_path = Path(__file__).parent / "src"
     sys.path.insert(0, str(src_path))
@@ -47,10 +53,10 @@ def run_server():
     print(f"Timeout: {settings.request_timeout_seconds} seconds")
 
     uvicorn.run(
-        app,
+        "src.backend.main:app",
         host=settings.host,
         port=settings.port,
-        reload=True  # Set to False for production
+        reload=False  # Set to False to avoid the import string issue
     )
 
 if __name__ == "__main__":

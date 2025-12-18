@@ -90,7 +90,7 @@ async def chat(
     """
     try:
         # Log successful authentication
-        print(f"✓ Chat request from authenticated user: {current_user.email}")
+        print(f"Chat request from authenticated user: {current_user.email}")
 
         # Get the initialized agent
         tutor_agent = get_agent()
