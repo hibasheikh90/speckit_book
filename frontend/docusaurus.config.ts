@@ -22,8 +22,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'hibasheikh90', // Usually your GitHub org/user name.
+  projectName: 'speckit_book', // Usually your repo name.
 
   onBrokenLinks: 'ignore',
   onBrokenAnchors: 'ignore',
@@ -59,7 +59,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/hibasheikh90/speckit_book',
         },
         blog: {
           showReadingTime: true,
@@ -154,12 +154,12 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/hibasheikh90/speckit_book',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Hiba Sheikh. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
