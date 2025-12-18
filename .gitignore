@@ -91,3 +91,13 @@ junit.xml
 .temp/
 temp/
 .env.example
+
+# PID files
+*.pid
+
+# Test databases
+*.db
+test.db
+
+# Frontend build artifacts
+.docusaurus/
