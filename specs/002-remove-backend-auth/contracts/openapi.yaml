@@ -1,0 +1,193 @@
+openapi: 3.0.0
+
+info:
+  title: Educational AI Tutor API (Public - No Authentication)
+  version: 2.0.0
+  description: |
+    Publicly accessible API for Physical AI textbook chatbot.
+
+    **SECURITY NOTE**: This version has authentication removed. All endpoints are public.
+    Deploy only in trusted environments or with external security controls.
+  contact:
+    name: Panaversity
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.example.com
+    description: Production server (if applicable)
+
+tags:
+  - name: Health
+    description: Service health and status endpoints
+  - name: Chat
+    description: AI tutor chatbot endpoints
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Verify service status and configuration
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: "healthy"
+                constitution_loaded: true
+                model: "gemini-1.5-flash"
+                rate_limit: "10/minute"
+
+  /chat:
+    post:
+      summary: Chat with AI tutor
+      description: |
+        Send a question about Physical AI and Humanoid Robotics to receive an educational response.
+
+        **PUBLIC ENDPOINT** - No authentication required.
+      operationId: chatWithTutor
+      tags:
+        - Chat
+      requestBody:
+        required: true
+        description: Student's question
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              ros2_question:
+                summary: Question about ROS 2
+                value:
+                  message: "What is ROS 2 and how does it differ from ROS 1?"
+              gazebo_question:
+                summary: Question about Gazebo
+                value:
+                  message: "How do I simulate a robot in Gazebo?"
+      responses:
+        '200':
+          description: Successful response from AI tutor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              example:
+                response: "ROS 2 (Robot Operating System 2) is the next generation of ROS, a flexible framework for writing robot software..."
+                agent_name: "AI Tutor"
+        '422':
+          description: Validation error - Invalid request format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "Field required: message"
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "Rate limit exceeded. Try again in 60 seconds."
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "The tutor service is temporarily unavailable. Please try again later."
+        '504':
+          description: Request timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: "Request timed out after 30 seconds"
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - constitution_loaded
+        - model
+        - rate_limit
+      properties:
+        status:
+          type: string
+          description: Service health status
+          enum:
+            - healthy
+            - degraded
+            - unhealthy
+          example: "healthy"
+        constitution_loaded:
+          type: boolean
+          description: Whether the constitution file is loaded successfully
+          example: true
+        model:
+          type: string
+          description: AI model being used for responses
+          example: "gemini-1.5-flash"
+        rate_limit:
+          type: string
+          description: Current rate limit configuration
+          example: "10/minute"
+
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Student's question about Physical AI or Humanoid Robotics
+          minLength: 1
+          maxLength: 5000
+          example: "What is ROS 2?"
+      example:
+        message: "Explain the difference between forward and inverse kinematics"
+
+    ChatResponse:
+      type: object
+      required:
+        - response
+        - agent_name
+      properties:
+        response:
+          type: string
+          description: AI tutor's educational response
+          example: "ROS 2 is a flexible framework for writing robot software..."
+        agent_name:
+          type: string
+          description: Name of the AI agent that generated the response
+          example: "AI Tutor"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Human-readable error message
+          example: "The tutor service is temporarily unavailable. Please try again later."
+
+  # REMOVED: securitySchemes.bearerAuth
+  # Authentication has been removed from this API version.
+  # All endpoints are publicly accessible.
+
+# REMOVED: security section
+# No global security requirements in this version.

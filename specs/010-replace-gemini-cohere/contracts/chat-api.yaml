@@ -1,0 +1,267 @@
+openapi: 3.0.3
+info:
+  title: Educational AI Tutor API - Chat Endpoint
+  description: |
+    Chat API endpoint for Physical AI and Humanoid Robotics educational tutor.
+
+    This contract documents the `/chat` endpoint which remains **unchanged** during the
+    Gemini to Cohere migration. The migration is internal only - the API contract is
+    preserved for backward compatibility with the frontend.
+  version: 1.0.0
+  contact:
+    name: Physical AI Textbook
+    url: https://github.com/your-org/speckit_book
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.yourdomain.com
+    description: Production server
+
+paths:
+  /chat:
+    post:
+      summary: Send a message to the AI tutor
+      description: |
+        Submit a student question or prompt to the AI tutor and receive an educational response.
+
+        **Rate Limiting**: 10 requests per minute per IP address.
+
+        **Authentication**: Currently no authentication required (removed in previous feature).
+
+        **Timeout**: Requests timeout after 30 seconds.
+
+        **AI Provider**: Cohere API (previously Gemini - migration transparent to clients).
+      operationId: chatWithTutor
+      tags:
+        - Chat
+
+      requestBody:
+        description: Student's question or prompt
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              physicalAIQuestion:
+                summary: Question about Physical AI
+                value:
+                  message: "What is physical AI and how does it differ from traditional AI?"
+
+              rosQuestion:
+                summary: ROS 2 technical question
+                value:
+                  message: "How do I create a publisher node in ROS 2 using Python?"
+
+              gazeboQuestion:
+                summary: Simulation question
+                value:
+                  message: "Explain the difference between Gazebo and Unity for robot simulation."
+
+              emptyMessage:
+                summary: Invalid - empty message
+                value:
+                  message: ""
+
+      responses:
+        '200':
+          description: Successful response from AI tutor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              examples:
+                successfulResponse:
+                  summary: Typical successful response
+                  value:
+                    response: "Physical AI combines artificial intelligence with physical embodiment, enabling machines to interact with and understand the physical world. Unlike traditional AI that operates purely in digital spaces, Physical AI powers robots and autonomous systems that perceive, reason about, and act upon their environment using sensors, actuators, and control systems."
+                    agent_name: "AI Tutor"
+
+        '422':
+          description: Validation error (invalid request format)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingMessage:
+                  summary: Missing required field
+                  value:
+                    detail: "Field required: message"
+
+                invalidType:
+                  summary: Invalid field type
+                  value:
+                    detail: "Input should be a valid string"
+
+        '429':
+          description: Rate limit exceeded
+          headers:
+            Retry-After:
+              description: Number of seconds to wait before retrying
+              schema:
+                type: integer
+                example: 60
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimitExceeded:
+                  summary: Too many requests
+                  value:
+                    detail: "Rate limit exceeded: 10 per 1 minute"
+
+        '500':
+          description: Internal server error (AI service failure)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                aiServiceError:
+                  summary: AI service unavailable
+                  value:
+                    detail: "The tutor service is temporarily unavailable. Please try again later."
+
+                invalidApiKey:
+                  summary: Configuration error
+                  value:
+                    detail: "The tutor service is temporarily unavailable. Please try again later."
+
+        '504':
+          description: Request timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                timeout:
+                  summary: Request exceeded timeout limit
+                  value:
+                    detail: "Request timed out after 30 seconds"
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: |
+        Verify service status and configuration.
+
+        **Note**: The `model` field will change from `"gemini-2.0-flash"` to
+        `"command-r-plus-08-2024"` after the Cohere migration.
+      operationId: healthCheck
+      tags:
+        - Health
+
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                healthyBeforeMigration:
+                  summary: Before Cohere migration
+                  value:
+                    status: "healthy"
+                    constitution_loaded: true
+                    model: "gemini-2.0-flash"
+                    rate_limit: "10/minute"
+
+                healthyAfterMigration:
+                  summary: After Cohere migration
+                  value:
+                    status: "healthy"
+                    constitution_loaded: true
+                    model: "command-r-plus-08-2024"
+                    rate_limit: "10/minute"
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Student's question or prompt for the AI tutor
+          minLength: 1
+          maxLength: 10000
+          example: "What is physical AI?"
+
+      additionalProperties: false
+
+    ChatResponse:
+      type: object
+      required:
+        - response
+        - agent_name
+      properties:
+        response:
+          type: string
+          description: AI-generated educational response
+          example: "Physical AI combines artificial intelligence with physical embodiment, enabling machines to interact with and understand the physical world."
+
+        agent_name:
+          type: string
+          description: Name of the AI agent that generated the response
+          example: "AI Tutor"
+
+      additionalProperties: false
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Error message describing the failure
+          example: "The tutor service is temporarily unavailable. Please try again later."
+
+      additionalProperties: false
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - constitution_loaded
+        - model
+        - rate_limit
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+          description: Service health status
+          example: "healthy"
+
+        constitution_loaded:
+          type: boolean
+          description: Whether the Global Constitution file was successfully loaded
+          example: true
+
+        model:
+          type: string
+          description: AI model identifier (changes after Cohere migration)
+          examples:
+            - "gemini-2.0-flash"
+            - "command-r-plus-08-2024"
+
+        rate_limit:
+          type: string
+          description: Rate limiting configuration
+          pattern: '^\d+/(minute|hour|day)$'
+          example: "10/minute"
+
+      additionalProperties: false
+
+tags:
+  - name: Chat
+    description: Chat interactions with the AI tutor
+
+  - name: Health
+    description: Service health and status checks
