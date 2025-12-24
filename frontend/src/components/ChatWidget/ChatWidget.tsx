@@ -7,7 +7,7 @@ import { useChat } from '../../contexts/ChatContext';
 interface ChatWidgetProps {}
 
 export const ChatWidget: React.FC<ChatWidgetProps> = () => {
-  const { isChatVisible, closeChat: closeGlobalChat } = useChat();
+  const { isChatVisible, closeChat } = useChat();
   const [widgetState, setWidgetState] = useState<ChatWidgetState>(() => {
     const state = new ChatWidgetState();
     // Override default to have the chat window closed initially
@@ -93,7 +93,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = () => {
       return newState;
     });
     setShowChatWindow(false);
-    closeGlobalChat(); // Close the global chat state too
+    closeChat(); // Close the global chat state too
   };
 
   // Only render if widget is visible based on global state

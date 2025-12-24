@@ -90,7 +90,6 @@ junit.xml
 *.swp
 .temp/
 temp/
-.env.example
 
 # PID files
 *.pid
