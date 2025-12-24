@@ -115,6 +115,13 @@ export class ChatSession {
     }
     return false; // Rate limit exceeded
   }
+
+  getTimeUntilRateLimitReset(): number {
+    const now = new Date();
+    const windowStart = new Date(this.rateLimitInfo.windowStart);
+    const elapsed = now.getTime() - windowStart.getTime();
+    return Math.max(0, 30000 - elapsed); // 30 seconds window
+  }
 }
 
 // ChatWidgetState entity model
