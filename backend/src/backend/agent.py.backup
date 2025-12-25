@@ -1,4 +1,4 @@
-"""AI agent module for Cohere-powered educational tutor using agents-sdk."""
+"""AI agent module for Gemini-powered educational tutor using agents-sdk."""
 import asyncio
 import sys
 from pathlib import Path
@@ -12,24 +12,24 @@ from tools.textbook_search_tool import textbook_search_tool
 
 
 class AITutor:
-    """Cohere-powered AI tutor initialized with Global Constitution."""
+    """Gemini-powered AI tutor initialized with Global Constitution."""
 
     def __init__(self):
-        """Initialize AI tutor with agents-sdk and Cohere."""
+        """Initialize AI tutor with agents-sdk and Gemini."""
         # Validate API key is set
-        if not settings.cohere_api_key:
-            raise RuntimeError("COHERE_API_KEY environment variable is required")
+        if not settings.gemini_api_key:
+            raise RuntimeError("GEMINI_API_KEY environment variable is required")
 
-        # Create Cohere-configured AsyncOpenAI client (using OpenAI-compatible endpoint)
-        cohere_client = AsyncOpenAI(
-            api_key=settings.cohere_api_key,
-            base_url=settings.cohere_base_url,
+        # Create Gemini-configured AsyncOpenAI client
+        gemini_client = AsyncOpenAI(
+            api_key=settings.gemini_api_key,
+            base_url=settings.gemini_base_url,
         )
 
         # Wrap in OpenAIChatCompletionsModel
         model = OpenAIChatCompletionsModel(
-            model=settings.cohere_model,
-            openai_client=cohere_client
+            model=settings.gemini_model,
+            openai_client=gemini_client
         )
 
         # Load constitution and create agent with instructions

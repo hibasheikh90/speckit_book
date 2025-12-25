@@ -28,8 +28,8 @@ This is a **web application** with backend/frontend separation:
 
 **Purpose**: Backup current state and prepare for migration
 
-- [ ] T001 Create git checkpoint before migration with commit message "Pre-Cohere migration checkpoint"
-- [ ] T002 Backup current agent.py to backend/src/backend/agent.py.backup
+- [X] T001 Create git checkpoint before migration with commit message "Pre-Cohere migration checkpoint"
+- [X] T002 Backup current agent.py to backend/src/backend/agent.py.backup
 
 ---
 

@@ -4,16 +4,16 @@ Educational AI Tutor Service for Physical AI and Humanoid Robotics
 
 This service provides an API endpoint for students to ask questions about
 Physical AI and Humanoid Robotics. It uses the OpenAI Agent SDK with
-Gemini 2.0 Flash to generate educational responses guided by the project's
+Cohere Command A to generate educational responses guided by the project's
 Global Constitution principles.
 
 Usage:
     uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 
 Environment Variables:
-    GEMINI_API_KEY: Your Google Gemini API key
-    GEMINI_BASE_URL: Base URL for Gemini API (default: https://generativelanguage.googleapis.com/v1beta/openai/)
-    GEMINI_MODEL: Model name (default: gemini-2.0-flash)
+    COHERE_API_KEY: Your Cohere API key
+    COHERE_BASE_URL: Base URL for Cohere API (default: https://api.cohere.ai/compatibility/v1)
+    COHERE_MODEL: Model name (default: command-a-03-2025)
     REQUEST_TIMEOUT_SECONDS: Request timeout in seconds (default: 30)
     RATE_LIMIT_PER_MINUTE: Rate limit per minute (default: 10)
 
@@ -38,17 +38,17 @@ def run_server():
     sys.path.insert(0, str(src_path))
 
     # Set default environment variables if not set
-    if not os.environ.get('GEMINI_API_KEY'):
-        print("Warning: GEMINI_API_KEY environment variable not set.")
+    if not os.environ.get('COHERE_API_KEY'):
+        print("Warning: COHERE_API_KEY environment variable not set.")
         print("Please set it before running the server in production.")
-        os.environ.setdefault('GEMINI_API_KEY', 'dummy-key-for-development')
+        os.environ.setdefault('COHERE_API_KEY', 'dummy-key-for-development')
 
     from src.backend.main import app
     import uvicorn
 
     from src.backend.config import settings
     print(f"Starting Educational AI Tutor Service on {settings.host}:{settings.port}")
-    print(f"Using model: {settings.gemini_model}")
+    print(f"Using model: {settings.cohere_model}")
     print(f"Rate limit: {settings.rate_limit_per_minute} requests per minute")
     print(f"Timeout: {settings.request_timeout_seconds} seconds")
 

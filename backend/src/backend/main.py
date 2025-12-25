@@ -1,5 +1,5 @@
 """FastAPI application for the educational AI tutor service."""
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request, HTTPException
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -12,8 +12,6 @@ import asyncio
 # Add parent directory to path for sibling package imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config.settings import settings
-from auth.middleware.jwt import get_current_user
-from auth.models.user import User
 from auth.routes import registration, login, verify
 from config.database import engine, Base
 
@@ -54,7 +52,7 @@ async def health_check():
     return {
         "status": "healthy",
         "constitution_loaded": constitution_exists,
-        "model": settings.gemini_model,
+        "model": settings.cohere_model,
         "rate_limit": f"{settings.rate_limit_per_minute}/minute"
     }
 
@@ -63,7 +61,6 @@ async def health_check():
           response_model=ChatResponse,
           responses={
               200: {"description": "Successful response from AI tutor"},
-              401: {"description": "Unauthorized - Invalid or missing token"},
               422: {"model": ErrorResponse, "description": "Validation error"},
               429: {"model": ErrorResponse, "description": "Rate limit exceeded"},
               500: {"model": ErrorResponse, "description": "Internal server error"},
@@ -72,15 +69,13 @@ async def health_check():
 @limiter.limit(f"{settings.rate_limit_per_minute}/minute")
 async def chat(
     request: Request,
-    chat_request: ChatRequest,
-    current_user: User = Depends(get_current_user)
+    chat_request: ChatRequest
 ):
     """Chat endpoint for students to ask questions about Physical AI and Humanoid Robotics.
 
     Args:
         request: FastAPI request object for rate limiting
         chat_request: The validated chat request containing the student's question
-        current_user: The authenticated user (from JWT token)
 
     Returns:
         ChatResponse: The AI tutor's educational response
@@ -89,9 +84,6 @@ async def chat(
         HTTPException: Various error conditions with appropriate status codes
     """
     try:
-        # Log successful authentication
-        print(f"Chat request from authenticated user: {current_user.email}")
-
         # Get the initialized agent
         tutor_agent = get_agent()
 
@@ -101,7 +93,7 @@ async def chat(
         except Exception as ai_error:
             # If AI service fails (quota, etc), return a mock response for testing
             print(f"AI service error: {str(ai_error)}")
-            response_text = f"[Mock Response] Regarding '{chat_request.message}': This is a test response. The authentication system is working correctly. (AI service temporarily unavailable due to API quota.)"
+            response_text = f"[Mock Response] Regarding '{chat_request.message}': This is a test response. Authentication has been removed from this endpoint. (AI service temporarily unavailable due to API quota.)"
 
         # Return formatted response
         return ChatResponse(

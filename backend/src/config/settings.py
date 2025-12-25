@@ -13,11 +13,14 @@ class Settings(BaseSettings):
     qdrant_api_key: Optional[str] = None
     qdrant_collection_name: str = "textbook_chunks"
 
-    # Google Gemini API Configuration
-    gemini_api_key: str
-    gemini_model_name: str = "models/text-embedding-004"  # Default embedding model
-    gemini_model: str = "gemini-2.0-flash"
-    gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    # Cohere API Configuration (OpenAI-compatible endpoint) - for chat only
+    cohere_api_key: str
+    cohere_model: str = "command-a-03-2025"
+    cohere_base_url: str = "https://api.cohere.ai/compatibility/v1"
+
+    # Gemini API Configuration - for embeddings only (RAG)
+    gemini_api_key: str = ""
+    gemini_model_name: str = "models/text-embedding-004"
 
     # Application Configuration
     backend_host: str = "0.0.0.0"

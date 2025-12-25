@@ -10,10 +10,10 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "your-super-secret-key-change-in-production"
     neon_database_url: str = ""
 
-    # Gemini API Configuration
-    gemini_api_key: str
-    gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
-    gemini_model: str = "gemini-2.0-flash"
+    # Cohere API Configuration (OpenAI-compatible endpoint)
+    cohere_api_key: str
+    cohere_base_url: str = "https://api.cohere.ai/compatibility/v1"
+    cohere_model: str = "command-a-03-2025"
 
     # Qdrant Configuration (for RAG functionality)
     qdrant_url: str
