@@ -68,7 +68,7 @@
   bottom: 110px;
   right: 30px;
   width: 400px;
-  height: 600px;
+  height: 520px;
   background: rgba(26, 32, 53, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -136,18 +136,26 @@
 .chat-header-button {
   background: rgba(128, 90, 213, 0.2);
   border: 1px solid rgba(128, 90, 213, 0.3);
-  color: #e2e8f0;
+  color: #f7fafc;
   cursor: pointer;
-  padding: 6px;
+  padding: 6px 10px;
   border-radius: 8px;
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
+  font-size: 18px;
+  line-height: 1;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chat-header-button:hover {
-  background: rgba(128, 90, 213, 0.3);
-  border-color: rgba(128, 90, 213, 0.5);
+  background: rgba(128, 90, 213, 0.4);
+  border-color: rgba(128, 90, 213, 0.6);
   box-shadow: 0 0 10px rgba(128, 90, 213, 0.3);
+  color: #ffffff;
 }
 
 .chat-messages {

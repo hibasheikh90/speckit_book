@@ -7,13 +7,13 @@ import { useChat } from '../../contexts/ChatContext';
 interface ChatWidgetProps {}
 
 export const ChatWidget: React.FC<ChatWidgetProps> = () => {
-  const { isChatVisible, closeChat } = useChat();
+  const { closeChat } = useChat();
   const [widgetState, setWidgetState] = useState<ChatWidgetState>(() => {
     const state = new ChatWidgetState();
     // Override default to have the chat window closed initially
     state.isExpanded = false;
-    // Set visibility based on global state
-    state.isVisible = isChatVisible;
+    // Widget button is always visible
+    state.isVisible = true;
     return state;
   });
   const [showChatWindow, setShowChatWindow] = useState<boolean>(false);
@@ -27,34 +27,34 @@ export const ChatWidget: React.FC<ChatWidgetProps> = () => {
         setWidgetState(prevState => {
           const newState = new ChatWidgetState();
           newState.isExpanded = parsedState.isExpanded || false;
-          // Only make it visible if the global state says it should be
-          newState.isVisible = isChatVisible && (parsedState.isVisible !== false);
+          // Widget button is always visible
+          newState.isVisible = true;
           newState.position = parsedState.position || { x: 20, y: 20 };
           newState.unreadCount = parsedState.unreadCount || 0;
           newState.lastMessagePreview = parsedState.lastMessagePreview || '';
           return newState;
         });
 
-        // If the widget was expanded when last closed and is now visible, show the chat window
-        if (parsedState.isExpanded && isChatVisible) {
+        // If the widget was expanded when last closed, show the chat window
+        if (parsedState.isExpanded) {
           setShowChatWindow(true);
         }
       } catch (e) {
         console.warn('Failed to parse saved chat widget state, using defaults');
       }
     } else {
-      // If no saved state, initialize with chat closed but button visible if global state allows
+      // If no saved state, initialize with chat closed but button visible
       setWidgetState(prevState => {
         const newState = new ChatWidgetState();
         newState.isExpanded = false;
-        newState.isVisible = isChatVisible;
+        newState.isVisible = true;
         newState.position = { x: 20, y: 20 };
         newState.unreadCount = 0;
         newState.lastMessagePreview = '';
         return newState;
       });
     }
-  }, [isChatVisible]); // Add isChatVisible as dependency
+  }, []); // Run once on mount
 
   // Save widget state to localStorage whenever it changes
   useEffect(() => {
@@ -96,11 +96,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = () => {
     closeChat(); // Close the global chat state too
   };
 
-  // Only render if widget is visible based on global state
-  if (!isChatVisible) {
-    return null;
-  }
-
   return (
     <div className="chat-widget-container">
       {showChatWindow ? (
@@ -134,21 +129,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = () => {
 
 // Wrapper component that handles the global chat visibility state
 export const ChatWidgetWithProvider: React.FC = () => {
-  const { isChatVisible, openChat, closeChat } = useChat();
-
-  // Render the toggle button when chat is not visible
-  if (!isChatVisible) {
-    return (
-      <button
-        className="chat-widget-button"
-        onClick={openChat}
-        aria-label="Open chat"
-      >
-        💬
-      </button>
-    );
-  }
-
-  // Otherwise, render the actual ChatWidget
+  // Simply render ChatWidget - it handles all visibility logic internally
   return <ChatWidget />;
 };

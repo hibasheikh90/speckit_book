@@ -1,6 +1,7 @@
 import { MessageSender } from './models';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+// Browser-safe environment variable access
+const BACKEND_URL = (typeof process !== 'undefined' && process.env.REACT_APP_BACKEND_URL) || 'http://localhost:8000';
 
 export interface ChatRequest {
   message: string;

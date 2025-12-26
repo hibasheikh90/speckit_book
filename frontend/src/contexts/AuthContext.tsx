@@ -40,7 +40,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'}/auth/login`, {
+    const backendUrl = (typeof process !== 'undefined' && process.env.REACT_APP_BACKEND_URL) || 'http://localhost:8000';
+    const response = await fetch(`${backendUrl}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,7 +67,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const register = async (email: string, password: string): Promise<void> => {
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'}/auth/register`, {
+    const backendUrl = (typeof process !== 'undefined' && process.env.REACT_APP_BACKEND_URL) || 'http://localhost:8000';
+    const response = await fetch(`${backendUrl}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
