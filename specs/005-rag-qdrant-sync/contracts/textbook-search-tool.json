@@ -1,0 +1,51 @@
+# API Contract: Textbook Search Tool
+
+## Overview
+The `search_textbook` tool allows the OpenAI Agent to retrieve relevant textbook content when answering student questions.
+
+## Tool Definition
+```json
+{
+  "type": "function",
+  "function": {
+    "name": "search_textbook",
+    "description": "Search the Physical AI & Humanoid Robotics textbook for relevant content to answer student questions",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "The student's question or topic to search for in the textbook"
+        }
+      },
+      "required": ["query"]
+    }
+  }
+}
+```
+
+## Expected Behavior
+- Input: A query string from the OpenAI Agent
+- Processing: Vector search in Qdrant using Gemini embeddings
+- Output: Array of relevant textbook content chunks with metadata
+- Maximum results: 5 (as specified in requirements)
+
+## Response Format
+```json
+{
+  "results": [
+    {
+      "content": "text content of the matched chunk",
+      "source_file": "path to original markdown file",
+      "chapter_title": "title of the chapter",
+      "score": "similarity score (0.0-1.0)",
+      "page_url": "URL to the original content"
+    }
+  ]
+}
+```
+
+## Error Handling
+- Returns empty results array if no relevant content is found
+- Handles Qdrant connection failures gracefully
+- Implements rate limiting for API calls
